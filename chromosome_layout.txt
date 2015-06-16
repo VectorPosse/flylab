@@ -1,0 +1,4 @@
+X: white eyes (1.5, w), tan body (27.5, t)
+2: curly wings (6.1, Cy), black body (48.5, b), purple eyes (54.5, pr), vestigial wings (67.0, vg), lobe eyes (72.0, L), brown eyes (104.5, bw)
+3: stubble bristles (58.2, Sb), ebony body (70.7, e)
+4: eyeless (2.0, ey), shaven bristles (3.0, sv)
