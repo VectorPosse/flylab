@@ -18,3 +18,4 @@ def locateGene(gene):
     print(cnum, num, abbr, dominant)
 locateGene("stubble bristles")
 clayout.close()
+#test
