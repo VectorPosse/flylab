@@ -1,6 +1,7 @@
 __author__ = 'Kira'
 from tkinter import *
 from flyclass import Fly
+import csv
 mutationsF = []
 mutationsM = []
 for i in range(1, 3):
@@ -26,17 +27,17 @@ for i in range(1, 3):
     var7 = StringVar(top)
     var7.set("wild type")
 
-    eyecolors = OptionMenu(top, var1, "purple", "brown", "white")
+    eyecolors = OptionMenu(top, var1, "purple eyes", "brown eyes", "white eyes")
     eyecolorsL = Label(top, text="Eye Colors:")
-    eyeshapes = OptionMenu(top, var2, "lobe", "eyeless")
+    eyeshapes = OptionMenu(top, var2, "lobe eyes", "eyeless")
     eyeshapesL = Label(top, text="Eye Shapes:")
-    bristles = OptionMenu(top, var3, "shaven", "stubble")
+    bristles = OptionMenu(top, var3, "shaven bristles", "stubble bristles")
     bristlesL = Label(top, text="Bristles:")
-    wingshapes = OptionMenu(top, var4, "apterous", "curly")
+    wingshapes = OptionMenu(top, var4, "apterous wings", "curly wings")
     wingshapesL = Label(top, text="Wing Shapes:")
-    wingsize = OptionMenu(top, var5, "vestigial")
+    wingsize = OptionMenu(top, var5, "vestigial wings")
     wingsizeL = Label(top, text="Wing Sizes:")
-    bodycolor = OptionMenu(top, var6, "ebony", "black", "tan")
+    bodycolor = OptionMenu(top, var6, "ebony body", "black body", "tan body")
     bodycolorL = Label(top, text="Body Colors:")
     antennaeshapes = OptionMenu(top, var7, "aristapedia")
     antennaeshapesL = Label(top, text="Antennae Shapes:")
@@ -61,9 +62,11 @@ for i in range(1, 3):
     back.pack()
     top.mainloop()
 
-print("female mutations: ", mutationsF)
-print("male mutations: ", mutationsM)
+#print("female mutations: ", mutationsF)
+#print("male mutations: ", mutationsM)
 female = Fly(True, mutationsF)
 male = Fly(False, mutationsM)
+female.getdata()
+male.getdata()
 female.chooseAlleles()
 male.chooseAlleles()

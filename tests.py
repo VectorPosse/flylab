@@ -16,5 +16,10 @@ def locateGene(gene):
     if(abbr[0].isupper()):
         dominant = True
     print(cnum, num, abbr, dominant)
-locateGene("stubble bristles")
+#locateGene("stubble bristles")
 clayout.close()
+
+me = []
+me.append(["no","what","hey"])
+me.append("WOOO")
+print(me)
