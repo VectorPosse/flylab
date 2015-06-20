@@ -3,3 +3,4 @@ recombination frequency of 1% = 1 centimorgan (cM)
 the fly is called drosophila
 fourth chromosome is often ignored because it is tiny but there are genes we need on it
 male/female is not determine by XX and XY, calculate X chromosome to number of autosomes. 1:1 means female, 1:2 means male.
+rAC=rAB(1-rBC) + (1-rAB)rBC

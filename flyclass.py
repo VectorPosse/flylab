@@ -1,22 +1,23 @@
 __author__ = 'Kira'
 import csv
 class Fly:
-    def __init__(self, female, mutations):
+    def __init__(self, female, mutations, generation):
         self.female = female
         self.mutations = mutations
+        self.generation = generation
+        self.mutationinfos = []
     def getdata(self):
         cfile = open("chromosome_layout.csv")
         thereader = csv.reader(cfile, delimiter=',', quotechar='|')
-        mutationinfos = []
         for mut in self.mutations:
             if (mut == "wild type"):
-                mutationinfos.append([])
+                self.mutationinfos.append([])
             else:
                 cfile.seek(0)
                 for row in thereader:
                     if (row[1] == mut):
-                        mutationinfos.append(row)
+                        self.mutationinfos.append(row)
                         break
-        print(mutationinfos)
+        print(self.mutationinfos)
     def chooseAlleles(self):
         print(self.mutations)

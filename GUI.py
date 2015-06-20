@@ -64,8 +64,8 @@ for i in range(1, 3):
 
 #print("female mutations: ", mutationsF)
 #print("male mutations: ", mutationsM)
-female = Fly(True, mutationsF)
-male = Fly(False, mutationsM)
+female = Fly(True, mutationsF, 1)
+male = Fly(False, mutationsM, 1)
 female.getdata()
 male.getdata()
 female.chooseAlleles()
