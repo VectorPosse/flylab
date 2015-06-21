@@ -22,4 +22,8 @@ clayout.close()
 me = []
 me.append(["no","what","hey"])
 me.append("WOOO")
-print(me)
+#print(me)
+
+from flyclass import Fly
+me = Fly(False, ["wild type", "wild type", "wild type", "wild type"], 1)
+me.chooseAlleles

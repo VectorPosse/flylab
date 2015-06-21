@@ -18,6 +18,7 @@ class Fly:
                     if (row[1] == mut):
                         self.mutationinfos.append(row)
                         break
-        print(self.mutationinfos)
+        return self.mutationinfos
     def chooseAlleles(self):
-        print(self.mutations)
+        if(self.generation == 1):
+            return self.mutations

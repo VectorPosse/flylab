@@ -2,6 +2,34 @@ __author__ = 'Kira'
 from tkinter import *
 from flyclass import Fly
 import csv
+def mate():
+    fAlleles = female.chooseAlleles()
+    mAlleles = male.chooseAlleles()
+    fMutations = female.getdata()
+    mMutations = male.getdata()
+    offspring = []
+    for i in range(0,7):
+        if (fAlleles[i] == "wild type" and mAlleles[i] == "wild type"):
+            offspring.append(["wild type", "wild type"])
+        if(fAlleles[i] != "wild type" and mAlleles[i] != "wild type"):
+            if(fAlleles[i] == mAlleles[i]):
+                offspring.append([fAlleles[i], fAlleles[i]])
+            else:
+                print("NOPE") #This cannot happen in flylab
+        elif (fAlleles[i] != "wild type" or mAlleles[i] != "wild type"):
+            if(fAlleles[i] != "wild type"):
+                if(fMutations[i][3] == "no"):
+                    offspring.append(["wild type", fAlleles[i]]) #One that comes first in offspring list is phenotype
+                else:
+                    offspring.append([fAlleles[i], "wild type"])
+            else:
+                if(mMutations[i][3] == "no"):
+                    offspring.append(["wild type", mAlleles[i]])
+                else:
+                    offspring.append([mAlleles[i], "wild type"])
+    return offspring
+
+
 mutationsF = []
 mutationsM = []
 for i in range(1, 3):
@@ -66,7 +94,18 @@ for i in range(1, 3):
 #print("male mutations: ", mutationsM)
 female = Fly(True, mutationsF, 1)
 male = Fly(False, mutationsM, 1)
-female.getdata()
-male.getdata()
-female.chooseAlleles()
-male.chooseAlleles()
+offspring = mate()
+offspringgenotypeList = []
+for thingy in offspring:
+    offspringgenotypeList.append(thingy[0])
+print(offspringgenotypeList)
+
+
+top = Tk()
+newfly = Label(top, text = "Offspring")
+offspringgenotypelabel = Label(top, text = offspringgenotypeList)
+mutationtypesL = Label(top, text = "Eye Color  Eye Shape  Bristles  Wing Shape  Wing Size  Body Color  Antennae Shape")
+newfly.pack()
+mutationtypesL.pack()
+offspringgenotypelabel.pack()
+top.mainloop()
