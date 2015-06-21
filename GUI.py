@@ -98,12 +98,12 @@ offspring = mate()
 offspringgenotypeList = []
 for thingy in offspring:
     offspringgenotypeList.append(thingy[0])
-print(offspringgenotypeList)
+offspringgenotypelistUse = "  ".join(genotype for genotype in offspringgenotypeList)
 
 
 top = Tk()
 newfly = Label(top, text = "Offspring")
-offspringgenotypelabel = Label(top, text = offspringgenotypeList)
+offspringgenotypelabel = Label(top, text = offspringgenotypelistUse)
 mutationtypesL = Label(top, text = "Eye Color  Eye Shape  Bristles  Wing Shape  Wing Size  Body Color  Antennae Shape")
 newfly.pack()
 mutationtypesL.pack()
