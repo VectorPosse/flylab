@@ -2,6 +2,18 @@ __author__ = 'Kira'
 from tkinter import *
 from flyclass import Fly
 import csv
+
+def windowSettings(windowName):
+    top.minsize(500, 500)
+    top.wm_title("Fly Mating")
+    h = 500
+    w = 500
+    ws = top.winfo_screenwidth()
+    hs = top.winfo_screenheight()
+    x = (ws/2) - (h/2)
+    y = (hs/2) - (h/2)
+    windowName.geometry('%dx%d+%d+%d' % (w, h, x, y))
+
 def mate():
     fAlleles = female.chooseAlleles()
     mAlleles = male.chooseAlleles()
@@ -34,6 +46,7 @@ mutationsF = []
 mutationsM = []
 for i in range(1, 3):
     top = Tk()
+    windowSettings(top)
     femaleL = Label(top, text="CHOOSE FEMALE MUTATIONS")
     maleL = Label(top, text="CHOOSE MALE MUTATIONS")
     if(i == 1):
@@ -102,6 +115,7 @@ offspringgenotypelistUse = "  ".join(genotype for genotype in offspringgenotypeL
 
 
 top = Tk()
+windowSettings(top)
 newfly = Label(top, text = "Offspring")
 offspringgenotypelabel = Label(top, text = offspringgenotypelistUse)
 mutationtypesL = Label(top, text = "Eye Color  Eye Shape  Bristles  Wing Shape  Wing Size  Body Color  Antennae Shape")
