@@ -15,10 +15,12 @@ def windowSettings(windowName):
     windowName.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
 def mate(female, male):
-    fAlleles = female.chooseAlleles()
-    mAlleles = male.chooseAlleles()
-    fMutations = female.getdata()
-    mMutations = male.getdata()
+    fAllelesList = female.chooseAlleles()
+    mAllelesList = male.chooseAlleles()
+    fMutations = fAllelesList[1]
+    mMutations = mAllelesList[1]
+    fAlleles = fAllelesList[0]
+    mAlleles = mAllelesList[0]
     fcrnum = female.getLinked()
     mcrnum = male.getLinked()
     totalcrnum = fcrnum+mcrnum
@@ -46,6 +48,7 @@ def mate(female, male):
     return offspring
 
 again = True
+offspringCanUse = False
 while (again):
     mutationsF = []
     mutationsM = []
@@ -53,11 +56,19 @@ while (again):
         top = Tk()
         windowSettings(top)
         femaleL = Label(top, text="CHOOSE FEMALE MUTATIONS")
+        femaleOffspringL = Label(top, text="CHOOSE FEMALE MUTATIONS OR USE OFFSPRING")
         maleL = Label(top, text="CHOOSE MALE MUTATIONS")
+        maleOffspringL = Label(top, text="CHOOSE MALE MUTATIONS OR USE OFFSPRING")
         if(i == 1):
-            femaleL.pack()
+            if(offspringCanUse):
+                femaleOffspringL.pack()
+            else:
+                femaleL.pack()
         else:
-            maleL.pack()
+            if(offspringCanUse):
+                maleOffspringL.pack()
+            else:
+                maleL.pack()
         var1 = StringVar(top)
         var1.set("wild type")
         var2 = StringVar(top)
@@ -73,6 +84,15 @@ while (again):
         var7 = StringVar(top)
         var7.set("wild type")
 
+        def useOffspringCallback():
+            global mutationsF
+            global mutationsM
+            if (i == 1):
+                mutationsF = offspring
+            else:
+                mutationsM = offspring
+            top.destroy()
+
         eyecolors = OptionMenu(top, var1, "purple eyes", "brown eyes", "white eyes")
         eyecolorsL = Label(top, text="Eye Colors:")
         eyeshapes = OptionMenu(top, var2, "lobe eyes", "eyeless")
@@ -87,6 +107,7 @@ while (again):
         bodycolorL = Label(top, text="Body Colors:")
         antennaeshapes = OptionMenu(top, var7, "aristapedia")
         antennaeshapesL = Label(top, text="Antennae Shapes:")
+        offspringButton = Button(top, text="USE OFFSPRING", command=useOffspringCallback)
         characteristics = [eyecolors, eyeshapes, bristles, wingshapes, wingsize, bodycolor, antennaeshapes]
         labels = [eyecolorsL, eyeshapesL, bristlesL, wingshapesL, wingsizeL, bodycolorL, antennaeshapesL]
         v = [var1, var2, var3, var4, var5, var6, var7]
@@ -94,15 +115,18 @@ while (again):
             labels[characteristics.index(c)].pack()
             c.pack()
 
+        if(offspringCanUse):
+            offspringButton.pack()
+
         def backCallBack():
             global mutationsF
             global mutationsM
             for var in v:
                 trait = var.get()
                 if(i == 1):
-                    mutationsF.append(trait)
+                    mutationsF.append([trait, trait]) #appends both alleles
                 else:
-                    mutationsM.append(trait)
+                    mutationsM.append([trait, trait]) #appends both alleles
             top.destroy()
         back = Button(top, text="CONTINUE", command=backCallBack)
         back.pack()
@@ -110,8 +134,8 @@ while (again):
 
     #print("female mutations: ", mutationsF)
     #print("male mutations: ", mutationsM)
-    female = Fly(True, mutationsF, 1)
-    male = Fly(False, mutationsM, 1)
+    female = Fly(True, mutationsF)
+    male = Fly(False, mutationsM)
     offspring = mate(female, male)
     offspringgenotypeList = []
     for thingy in offspring:
@@ -122,13 +146,10 @@ while (again):
     top = Tk()
     windowSettings(top)
     def anotherCrossCommand():
-        global again
-        offspring = True
-        again = True
+        global offspringCanUse
+        offspringCanUse = True
         top.destroy()
     def newCrossCommand():
-        global again
-        again = True
         top.destroy()
     def quitCallBack():
         global again
@@ -148,4 +169,3 @@ while (again):
     newCross.pack(side=RIGHT)
     quit.pack(side=BOTTOM)
     top.mainloop()
-    print(again)
