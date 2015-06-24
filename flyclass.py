@@ -15,6 +15,7 @@ class Fly:
         self.three = []
         self.four = []
     def chooseAlleles(self):
+        self.mutationinfos = []
         cfile = open("chromosome_layout.csv")
         thereader = csv.reader(cfile, delimiter=',', quotechar='|')
         for mut in self.mutations:
@@ -28,6 +29,7 @@ class Fly:
                         if (row[1] == allele):
                             self.mutpair.append(row)
             self.mutationinfos.append(self.mutpair)
+        #print("self.mutationinfos: ", self.mutationinfos)
         for i in range(0, 7):
             if(self.mutationinfos[i][0] == [] and self.mutationinfos[i][1] == []):
                 self.alleles[i] = "wild type"
@@ -67,7 +69,7 @@ class Fly:
                     self.alleles[self.mutations.index(chromosome[0])] = chromosome[0][0] #same as chromosome[0][1]
                     self.alleles[self.mutations.index(chromosome[1])] = chromosome[1][0] #same as chromosome[1][1]
                 else:
-                    print("LINKED")
+                    print("LINKED: ", chromosome)
                     chrom1 = [chromosome[0][0], chromosome[1][0]]
                     chrom2 = [chromosome[0][1], chromosome[1][1]]
                     allelespot0 = self.mutations.index(chromosome[0])

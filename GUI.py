@@ -43,9 +43,10 @@ def mate(female, male):
                 else:
                     offspring.append(["wild type", mAlleles[i]])
                     phenotype.append(0)
-    print(offspring)
-    print(phenotype)
-    return offspring, phenotype
+    offspringphenotypelist = []
+    for i in range(0, 7):
+        offspringphenotypelist.append(offspring[i][phenotype[i]])
+    return offspring, phenotype, offspringphenotypelist
 
 again = True
 offspringCanUse = False
@@ -88,9 +89,10 @@ while (again):
             global mutationsF
             global mutationsM
             if (i == 1):
-                mutationsF = offspring
+                mutationsF = offspring[0]
+                print(mutationsF)
             else:
-                mutationsM = offspring
+                mutationsM = offspring[0]
             top.destroy()
 
         eyecolors = OptionMenu(top, var1, "purple eyes", "brown eyes", "white eyes")
@@ -134,13 +136,21 @@ while (again):
 
     #print("female mutations: ", mutationsF)
     #print("male mutations: ", mutationsM)
-    female = Fly(True, mutationsF)
-    male = Fly(False, mutationsM)
-    [offspring, phenotype] = mate(female, male)
-    offspringphenotypeList = []
-    for i in range(0, 7):
-        offspringphenotypeList.append(offspring[i][phenotype[i]])
-    offspringphenotypelistUse = "  ".join(pheno for pheno in offspringphenotypeList)
+    offspring = []
+    phenotype = []
+    offspringphenotypelist = []
+    for i in range(0, 5):
+        female = Fly(True, mutationsF)
+        male = Fly(False, mutationsM)
+        [offspringpart, phenotypepart, offspringphenotypelistpart] = mate(female, male)
+        offspring.append(offspringpart)
+        phenotype.append(phenotypepart)
+        offspringphenotypelist.append(offspringphenotypelistpart)
+
+    from collections import Counter
+    data = offspringphenotypelist
+    yes = Counter(str(e) for e in data)
+    offspringphenotypelistUse = ("\n".join("{}: {}".format(k, v) for k, v in yes.items()))
 
 
     top = Tk()
