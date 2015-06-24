@@ -150,6 +150,8 @@ while (again):
         offspringCanUse = True
         top.destroy()
     def newCrossCommand():
+        global offspringCanUse
+        offspringCanUse = False
         top.destroy()
     def quitCallBack():
         global again
