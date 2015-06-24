@@ -90,7 +90,6 @@ while (again):
             global mutationsM
             if (i == 1):
                 mutationsF = offspring[0]
-                print(mutationsF)
             else:
                 mutationsM = offspring[0]
             top.destroy()
@@ -139,7 +138,7 @@ while (again):
     offspring = []
     phenotype = []
     offspringphenotypelist = []
-    for i in range(0, 5):
+    for i in range(0, 1000):
         female = Fly(True, mutationsF)
         male = Fly(False, mutationsM)
         [offspringpart, phenotypepart, offspringphenotypelistpart] = mate(female, male)
@@ -147,7 +146,7 @@ while (again):
         phenotype.append(phenotypepart)
         offspringphenotypelist.append(offspringphenotypelistpart)
 
-    from collections import Counter
+    from collections import Counter  #this counts how many times each PHENOTYPE appears
     data = offspringphenotypelist
     yes = Counter(str(e) for e in data)
     offspringphenotypelistUse = ("\n".join("{}: {}".format(k, v) for k, v in yes.items()))

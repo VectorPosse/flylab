@@ -69,7 +69,6 @@ class Fly:
                     self.alleles[self.mutations.index(chromosome[0])] = chromosome[0][0] #same as chromosome[0][1]
                     self.alleles[self.mutations.index(chromosome[1])] = chromosome[1][0] #same as chromosome[1][1]
                 else:
-                    print("LINKED: ", chromosome)
                     chrom1 = [chromosome[0][0], chromosome[1][0]]
                     chrom2 = [chromosome[0][1], chromosome[1][1]]
                     allelespot0 = self.mutations.index(chromosome[0])
@@ -90,16 +89,12 @@ class Fly:
                                     num1 = float(row[4])
                     m = abs(num1-num0)
                     rf = 1/2*(1-math.e**(-m/50))
-                    print("RF: ", rf)
                     randnumber = random.random()
-                    print("randnumber: ", randnumber)
                     if(randnumber > rf): #no recombination
-                        print("no recombination")
                         thechromosome = random.choice([chrom1, chrom2])
                         self.alleles[allelespot0] = thechromosome[0]
                         self.alleles[allelespot1] = thechromosome[1]
                     else:   #recombination
-                        print("recombination")
                         randomchoice = random.choice([0, 1])
                         if(randomchoice == 0):
                             self.alleles[allelespot0] = chromosome[0][0]
