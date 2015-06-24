@@ -1,7 +1,6 @@
 __author__ = 'Kira'
 from tkinter import *
 from flyclass import Fly
-import csv
 
 def windowSettings(windowName):
     top.minsize(500, 500)
@@ -15,37 +14,38 @@ def windowSettings(windowName):
     windowName.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
 def mate(female, male):
-    fAllelesList = female.chooseAlleles()
-    mAllelesList = male.chooseAlleles()
-    fMutations = fAllelesList[1]
-    mMutations = mAllelesList[1]
-    fAlleles = fAllelesList[0]
-    mAlleles = mAllelesList[0]
-    fcrnum = female.getLinked()
-    mcrnum = male.getLinked()
-    totalcrnum = fcrnum+mcrnum
+    [fAlleles, fMutations] = female.chooseAlleles()
+    [mAlleles, mMutations] = male.chooseAlleles()
+    phenotype = []
     offspring = []
-    #Check to see if genes are linked somehow
     for i in range(0, 7):
         if (fAlleles[i] == "wild type" and mAlleles[i] == "wild type"):
             offspring.append(["wild type", "wild type"])
+            phenotype.append(0)
         if(fAlleles[i] != "wild type" and mAlleles[i] != "wild type"):
             if(fAlleles[i] == mAlleles[i]):
-                offspring.append([fAlleles[i], fAlleles[i]])
+                offspring.append([fAlleles[i], mAlleles[i]])
+                phenotype.append(0)
             else:
                 print("NOPE") #This cannot happen in flylab
         elif (fAlleles[i] != "wild type" or mAlleles[i] != "wild type"):
             if(fAlleles[i] != "wild type"):
                 if(fMutations[i][3] == "no"):
-                    offspring.append(["wild type", fAlleles[i]]) #One that comes first in offspring list is phenotype
+                    offspring.append([fAlleles[i], "wild type"])#One that comes first in offspring list is female
+                    phenotype.append(1)
                 else:
                     offspring.append([fAlleles[i], "wild type"])
+                    phenotype.append(0)
             else:
                 if(mMutations[i][3] == "no"):
                     offspring.append(["wild type", mAlleles[i]])
+                    phenotype.append(0)
                 else:
-                    offspring.append([mAlleles[i], "wild type"])
-    return offspring
+                    offspring.append(["wild type", mAlleles[i]])
+                    phenotype.append(0)
+    print(offspring)
+    print(phenotype)
+    return offspring, phenotype
 
 again = True
 offspringCanUse = False
@@ -136,11 +136,11 @@ while (again):
     #print("male mutations: ", mutationsM)
     female = Fly(True, mutationsF)
     male = Fly(False, mutationsM)
-    offspring = mate(female, male)
-    offspringgenotypeList = []
-    for thingy in offspring:
-        offspringgenotypeList.append(thingy[0])
-    offspringgenotypelistUse = "  ".join(genotype for genotype in offspringgenotypeList)
+    [offspring, phenotype] = mate(female, male)
+    offspringphenotypeList = []
+    for i in range(0, 7):
+        offspringphenotypeList.append(offspring[i][phenotype[i]])
+    offspringphenotypelistUse = "  ".join(pheno for pheno in offspringphenotypeList)
 
 
     top = Tk()
@@ -157,7 +157,7 @@ while (again):
         top.destroy()
 
     newfly = Label(top, text = "Offspring")
-    offspringgenotypelabel = Label(top, text = offspringgenotypelistUse)
+    offspringgenotypelabel = Label(top, text = offspringphenotypelistUse)
     mutationtypesL = Label(top, text = "Eye Color  Eye Shape  Bristles  Wing Shape  Wing Size  Body Color  Antennae Shape")
     anotherCross = Button(top, text = "Perform another cross", command = anotherCrossCommand) #can use offspring
     newCross = Button(top, text = "Perform a new cross", command = newCrossCommand)
