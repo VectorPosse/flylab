@@ -1,11 +1,11 @@
 Eye Color: purple (PR), brown (BW), white (W), wild type
 Eye Shape: lobe (L), eyeless (EY), wild type
 Bristles: shaven (SV), stubble (SB), wild type
-Wing Shape: *apterous (AP), curly (CY), wild type
+Wing Shape: apterous (AP), curly (CY), wild type
 Wing Size: vestigial (VG), wild type
+Wing Vein: *incomplete, wild type
 Body Color: ebony (E), black (BL), tan (T), wild type
-Antennae Shape: *aristapedia (AR), wild type
+Antennae Shape: aristapedia (AR), wild type
 
-*incomplete wing vein
 
 *=not listed on chromosome thingy yet

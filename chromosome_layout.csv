@@ -1,15 +1,16 @@
-Chromosome,Name,Abbreviation,Dominant,Number
-X,white eyes,w,no,1.5
-X,tan body,t,no,27.5
-2,curly wings,Cy,yes,6.1
-2,black body,b,no,48.5
-2,purple eyes,pr,no,54.5
-2,vestigial wings,vg,no,67
-2,lobe eyes,L,yes,72
-2,brown eyes,bw,no,104.5
-3,stubble bristles,Sb,yes,58.2
-3,ebony body,e,no,70.7
-4,eyeless,ey,no,2
-4,shaven bristles,sv,no,3
-,apterous wings,,,
-,aristapedia,,,
+Chromosome,Name,Abbreviation,Dominant,Number,Lethal
+X,white eyes,w,no,1.5,no
+X,tan body,t,no,27.5,no
+2,curly wings,Cy,yes,6.1,yes
+2,black body,b,no,48.5,no
+2,purple eyes,pr,no,54.5,no
+2,vestigial wings,vg,no,67,no
+2,lobe eyes,L,yes,72,no
+2,brown eyes,bw,no,104.5,no
+3,stubble bristles,Sb,yes,58.2,yes
+3,ebony body,e,no,70.7,no
+4,eyeless,ey,no,2,no
+4,shaven bristles,sv,no,3,no
+2,apterous wings,ap,no,55.4,no
+3,aristapedia,ssa,no,58.5,yes
+3,incomplete wing vein,,no,,no
