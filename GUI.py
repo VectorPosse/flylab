@@ -24,8 +24,13 @@ def mate(female, male):
             phenotype.append(0)
         if(fAlleles[i] != "wild type" and mAlleles[i] != "wild type"):
             if(fAlleles[i] == mAlleles[i]):
-                offspring.append([fAlleles[i], mAlleles[i]])
-                phenotype.append(0)
+                if(fMutations[i][5] == "yes"): #lethal
+                    offspring = [["dead"]]
+                    phenotype = [0]
+                    break
+                else:
+                    offspring.append([fAlleles[i], mAlleles[i]])
+                    phenotype.append(0)
             else:
                 print("NOPE") #This cannot happen in flylab
         elif (fAlleles[i] != "wild type" or mAlleles[i] != "wild type"):
@@ -42,10 +47,13 @@ def mate(female, male):
                     phenotype.append(0)
                 else:
                     offspring.append(["wild type", mAlleles[i]])
-                    phenotype.append(0)
+                    phenotype.append(1)
     offspringphenotypelist = [] #the phenotypes that will actually be displayed
-    for i in range(0, 7):
-        offspringphenotypelist.append(offspring[i][phenotype[i]])
+    if(len(offspring) > 1):
+        for i in range(0, 7):
+            offspringphenotypelist.append(offspring[i][phenotype[i]])
+    else:
+        offspringphenotypelist = ["dead"]
     return offspring, phenotype, offspringphenotypelist
 
 again = True
@@ -137,9 +145,11 @@ while (again):
     phenotype = []
     offspringphenotypelist = []
     for i in range(0, 1000): #does mating 1000 times
+        #print("mutationsF", mutationsF)
         female = Fly(True, mutationsF)
         male = Fly(False, mutationsM)
         [offspringpart, phenotypepart, offspringphenotypelistpart] = mate(female, male)
+        #print("mutationsF part 2: ", mutationsF) #WHY DOES MUTATIONSF CHANGE WHEN I RUN THE MATE FUNCTION???????????
         offspring.append(offspringpart)
         phenotype.append(phenotypepart)
         offspringphenotypelist.append(offspringphenotypelistpart)

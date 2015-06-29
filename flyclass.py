@@ -18,9 +18,10 @@ class Fly:
         self.mutationinfos = []
         cfile = open("chromosome_layout.csv")
         thereader = csv.reader(cfile, delimiter=',', quotechar='|')
-        for mut in self.mutations:
+        for i in range(0, 7):
             self.mutpair = []
-            for allele in mut:
+            lethal = False
+            for allele in self.mutations[i]:
                 if (allele == "wild type"):
                     self.mutpair.append([])
                 else:
@@ -28,6 +29,15 @@ class Fly:
                     for row in thereader:
                         if (row[1] == allele):
                             self.mutpair.append(row)
+                            if (row[5] == "yes"): #check to see if lethal, if it is, make heterozygous
+                                #print("Lethal: ", self.mutations)
+                                lethal = True
+            if(lethal == True and self.mutations[i][0] == self.mutations[i][1]):
+                spot = random.choice([0, 1])
+                self.mutpair[spot] = []
+                self.mutations[i][spot] = "wild type"
+                #print(self.female)
+                #print("LETHAL: ", self.mutpair, self.mutations)
             self.mutationinfos.append(self.mutpair)
         for i in range(0, 7): #cycle through each pair of mutation infos and puts them in lists based on chromosomes
             if(self.mutationinfos[i][0] == [] and self.mutationinfos[i][1] == []):
