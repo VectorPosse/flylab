@@ -16,8 +16,8 @@ def windowSettings(windowName):
 def mate(female, male):
     [fAlleles, fMutations] = female.chooseAlleles()
     [mAlleles, mMutations] = male.chooseAlleles()
-    phenotype = []
-    offspring = []
+    phenotype = [] #keeps track of which is phenotype
+    offspring = [] #always ordered female,male so you can do the linked genes and know parent phenotypes
     for i in range(0, 7):
         if (fAlleles[i] == "wild type" and mAlleles[i] == "wild type"):
             offspring.append(["wild type", "wild type"])
@@ -43,7 +43,7 @@ def mate(female, male):
                 else:
                     offspring.append(["wild type", mAlleles[i]])
                     phenotype.append(0)
-    offspringphenotypelist = []
+    offspringphenotypelist = [] #the phenotypes that will actually be displayed
     for i in range(0, 7):
         offspringphenotypelist.append(offspring[i][phenotype[i]])
     return offspring, phenotype, offspringphenotypelist
@@ -133,12 +133,10 @@ while (again):
         back.pack()
         top.mainloop()
 
-    #print("female mutations: ", mutationsF)
-    #print("male mutations: ", mutationsM)
     offspring = []
     phenotype = []
     offspringphenotypelist = []
-    for i in range(0, 1000):
+    for i in range(0, 1000): #does mating 1000 times
         female = Fly(True, mutationsF)
         male = Fly(False, mutationsM)
         [offspringpart, phenotypepart, offspringphenotypelistpart] = mate(female, male)
@@ -149,7 +147,7 @@ while (again):
     from collections import Counter  #this counts how many times each PHENOTYPE appears
     data = offspringphenotypelist
     yes = Counter(str(e) for e in data)
-    offspringphenotypelistUse = ("\n".join("{}: {}".format(k, v) for k, v in yes.items()))
+    offspringphenotypelistUse = ("\n".join("{}: {}".format(k, v) for k, v in yes.items())) #makes dictionary output look pretty
 
 
     top = Tk()
