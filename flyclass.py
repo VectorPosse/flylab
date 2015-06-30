@@ -41,7 +41,7 @@ class Fly:
                 self.alleles[i] = "wild type"
             elif(self.mutationinfos[i][0] == [] or self.mutationinfos[i][1] == []): #one wild type and one mutation
                 if(self.mutationinfos[i][0] == []):
-                    if(self.mutationinfos[i][1][0] == "X"):
+                    if(self.mutationinfos[i][1][0] == "X"): #make list of lists for chromosomes and change "X" to "1" and then don't need all the if loops
                         self.x.append(self.mutations[i])
                     elif(self.mutationinfos[i][1][0] == "2"):
                         self.two.append(self.mutations[i])
@@ -68,6 +68,7 @@ class Fly:
                 elif(self.mutationinfos[i][0][0] == "4"):
                     self.four.append(self.mutations[i])
         for chromosome in [self.x, self.two, self.three, self.four]:
+            #already took care of if length = 0 because then it is all wild type (line 41)
             if(len(chromosome) == 1): #no linked genes, randomly choose an allele
                 self.alleles[self.mutations.index(chromosome[0])] = random.choice(chromosome[0])
             if(len(chromosome) == 2): #linked genes
