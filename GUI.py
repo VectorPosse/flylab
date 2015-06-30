@@ -1,6 +1,7 @@
 __author__ = 'Kira'
 from tkinter import *
 from flyclass import Fly
+import copy
 
 def windowSettings(windowName):
     top.minsize(500, 500)
@@ -94,6 +95,7 @@ while (again):
         var7.set("wild type")
 
         def useOffspringCallback():
+            #gotta make sure offspring aren't dead
             global mutationsF
             global mutationsM
             if (i == 1):
@@ -145,11 +147,9 @@ while (again):
     phenotype = []
     offspringphenotypelist = []
     for i in range(0, 1000): #does mating 1000 times
-        #print("mutationsF", mutationsF)
-        female = Fly(True, mutationsF)
+        female = Fly(True, copy.deepcopy(mutationsF))
         male = Fly(False, mutationsM)
         [offspringpart, phenotypepart, offspringphenotypelistpart] = mate(female, male)
-        #print("mutationsF part 2: ", mutationsF) #WHY DOES MUTATIONSF CHANGE WHEN I RUN THE MATE FUNCTION???????????
         offspring.append(offspringpart)
         phenotype.append(phenotypepart)
         offspringphenotypelist.append(offspringphenotypelistpart)
