@@ -61,13 +61,13 @@ class Fly:
                             cfile.seek(0)
                             for row in thereader:
                                 if (row[1] == eachthingy):
-                                    num0 = float(row[4])
+                                    location0 = float(row[4])
                     for otherthingies in chromosome[1]:
                         if(location1 == 0):
                             cfile.seek(0)
                             for row in thereader:
                                 if (row[1] == otherthingies):
-                                    num1 = float(row[4])
+                                    location1 = float(row[4])
                     m = abs(location1-location0)
                     rf = 1/2*(1-math.e**(-m/50)) #mapping function
                     randnumber = random.random()
@@ -83,15 +83,108 @@ class Fly:
                         else:
                             self.alleles[allelespot0] = chromosome[0][1]
                             self.alleles[allelespot1] = chromosome[1][0]
-            self.mutationinfos = [] #going to refill self.mutationinfos with info just for the alleles so mating is easier
-            for mut in self.alleles:
-                if (mut == "wild type"):
-                    self.mutationinfos.append([""])
-                else:
-                    cfile.seek(0)
-                    for row in thereader:
-                        if (row[1] == mut):
-                            self.mutationinfos.append(row)
-                            break
+            if(len(chromosome) == 3): #three linked genes
+                femalechromosome = [chromosome[0][0], chromosome[1][0], chromosome[2][0]]
+                malechromosome = [chromosome[0][1], chromosome[1][1], chromosome[2][1]]
+                if(femalechromosome == malechromosome): #no recombination
+                    self.alleles[self.mutations.index(chromosome[0])] = chromosome[0][0] #same as chromosome[0][1]
+                    self.alleles[self.mutations.index(chromosome[1])] = chromosome[1][0] #same as chromosome[1][1]
+                    self.alleles[self.mutations.index(chromosome[2])] = chromosome[2][0] #same as chromosome[2][1]
+                else: #must do crossing over
+                    threelocation0 = 0
+                    threelocation1 = 0
+                    threelocation2 = 0
+                    for allele in chromosome[0]: #make function to do this
+                        if(threelocation0 == 0):
+                            cfile.seek(0)
+                            for row in thereader:
+                                if (row[1] == allele):
+                                    threelocation0 = float(row[4])
+                    for allele in chromosome[1]:
+                        if(threelocation1 == 0):
+                            cfile.seek(0)
+                            for row in thereader:
+                                if (row[1] == allele):
+                                    threelocation1 = float(row[4])
+                    for allele in chromosome[2]:
+                        if(threelocation2 == 0):
+                            cfile.seek(0)
+                            for row in thereader:
+                                if (row[1] == allele):
+                                    threelocation2 = float(row[4])
+                    morgans01 = abs(threelocation0-threelocation1)
+                    morgans12 = abs(threelocation1-threelocation2)
+                    morgans20 = abs(threelocation2-threelocation0)
+                    unsortedmorgans = [morgans01, morgans12, morgans20]
+                    sortedmorgans = sorted([morgans01, morgans12, morgans20])
+                    indexmax = unsortedmorgans.index(sortedmorgans[2])
+                    indexmin = unsortedmorgans.index(sortedmorgans[0])
+                    #ORDERING CHROMOSOME, 0-1-2 where 0-1 is smallest distance
+                    if(indexmax == 0 and indexmin == 1):
+                        order = [1, 2, 0]
+                    elif(indexmax == 0 and indexmin == 2):
+                        order = [0, 2, 1]
+                    elif(indexmax == 1 and indexmin == 0):
+                        order = [1, 0, 2]
+                    elif(indexmax == 1 and indexmin == 2):
+                        order = [2, 0, 1]
+                    elif(indexmax == 2 and indexmin == 0):
+                        order = [0, 1, 2]
+                    elif(indexmax == 2 and indexmin == 1):
+                        order = [2, 1, 0]
+                    femalechromosome = [chromosome[order[0]][0], chromosome[order[1]][0], chromosome[order[2]][0]]
+                    malechromosome = [chromosome[order[0]][1], chromosome[order[1]][1], chromosome[order[2]][1]]
+                    threeAllelespot0 = self.mutations.index(chromosome[order[0]])
+                    threeAllelespot1 = self.mutations.index(chromosome[order[1]])
+                    threeAllelespot2 = self.mutations.index(chromosome[order[2]])
+                    rfmin = 1/2*(1-math.e**(-sortedmorgans[0]/50))
+                    rfmiddle = 1/2*(1-math.e**(-sortedmorgans[1]/50))
+                    rfdoublerecombination = rfmin*rfmiddle
+                    randomnumber = random.random()
+                    if(randomnumber <= rfdoublerecombination): #double recombination
+                        randallelechoice = random.choice([0, 1])
+                        if(randallelechoice == 0):
+                            self.alleles[threeAllelespot0] = femalechromosome[0]
+                            self.alleles[threeAllelespot1] = malechromosome[1]
+                            self.alleles[threeAllelespot2] = femalechromosome[2]
+                        else:
+                            self.alleles[threeAllelespot0] = malechromosome[0]
+                            self.alleles[threeAllelespot1] = femalechromosome[1]
+                            self.alleles[threeAllelespot2] = malechromosome[2]
+                    if(randomnumber <= rfmin and randomnumber > rfdoublerecombination): #crossing over between closest genes
+                        randomchoice = random.choice([0, 1])
+                        if(randomchoice == 0):
+                            self.alleles[threeAllelespot0] = femalechromosome[0]
+                            self.alleles[threeAllelespot1] = malechromosome[1]
+                            self.alleles[threeAllelespot2] = malechromosome[2]
+                        else:
+                            self.alleles[threeAllelespot0] = malechromosome[0]
+                            self.alleles[threeAllelespot1] = femalechromosome[1]
+                            self.alleles[threeAllelespot2] = femalechromosome[2]
+                    if(randomnumber <= rfmiddle+rfmin-rfdoublerecombination and randomnumber > rfmin): #crossing over between other two genes (middle length)
+                        randomchoice = random.choice([0, 1])
+                        if(randomchoice == 0):
+                            self.alleles[threeAllelespot0] = femalechromosome[0]
+                            self.alleles[threeAllelespot1] = femalechromosome[1]
+                            self.alleles[threeAllelespot2] = malechromosome[2]
+                        else:
+                            self.alleles[threeAllelespot0] = malechromosome[0]
+                            self.alleles[threeAllelespot1] = malechromosome[1]
+                            self.alleles[threeAllelespot2] = femalechromosome[2]
+                    if(randomnumber > rfmiddle+rfmin-rfdoublerecombination): #no recombination, just choose one of the chromosomes to pass on
+                        chromosomechoice = random.choice([femalechromosome, malechromosome])
+                        self.alleles[threeAllelespot0] = chromosomechoice[0]
+                        self.alleles[threeAllelespot1] = chromosomechoice[1]
+                        self.alleles[threeAllelespot2] = chromosomechoice[2]
+        self.mutationinfos = [] #going to refill self.mutationinfos with info just for the alleles so mating is easier
+        for mut in self.alleles:
+            if (mut == "wild type"):
+                self.mutationinfos.append([""])
+            else:
+                cfile.seek(0)
+                for row in thereader:
+                    if (row[1] == mut):
+                        self.mutationinfos.append(row)
+                        break
 
         return self.alleles, self.mutationinfos

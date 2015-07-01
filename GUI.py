@@ -33,6 +33,7 @@ def mate(female, male):
                     offspring.append([fAlleles[i], mAlleles[i]])
                     phenotype.append(0)
             else:
+                print("FEMALE ALLELE: ", fAlleles[i], " MALE ALLELE: ", mAlleles[i])
                 print("NOPE") #This cannot happen in flylab
         elif (fAlleles[i] != "wild type" or mAlleles[i] != "wild type"):
             if(fAlleles[i] != "wild type"):
