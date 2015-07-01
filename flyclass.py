@@ -10,10 +10,7 @@ class Fly:
         self.chromosomenum = []
         self.mutpair = []
         self.alleles = ["", "", "", "", "", "", ""]
-        self.x = []
-        self.two = []
-        self.three = []
-        self.four = []
+        self.listofchromosomes = [[], [], [], []]
     def chooseAlleles(self):
         self.mutationinfos = []
         cfile = open("chromosome_layout.csv")
@@ -23,7 +20,7 @@ class Fly:
             lethal = False
             for allele in self.mutations[i]:
                 if (allele == "wild type"):
-                    self.mutpair.append([])
+                    self.mutpair.append([""])
                 else:
                     cfile.seek(0)
                     for row in thereader:
@@ -33,41 +30,18 @@ class Fly:
                                 lethal = True
             if(lethal == True and self.mutations[i][0] == self.mutations[i][1]):
                 spot = random.choice([0, 1])
-                self.mutpair[spot] = []
+                self.mutpair[spot] = [""]
                 self.mutations[i][spot] = "wild type"
             self.mutationinfos.append(self.mutpair)
         for i in range(0, 7): #cycle through each pair of mutation infos and puts them in lists based on chromosomes
-            if(self.mutationinfos[i][0] == [] and self.mutationinfos[i][1] == []):
+            if(self.mutationinfos[i][0] == [""] and self.mutationinfos[i][1] == [""]):
                 self.alleles[i] = "wild type"
-            elif(self.mutationinfos[i][0] == [] or self.mutationinfos[i][1] == []): #one wild type and one mutation
-                if(self.mutationinfos[i][0] == []):
-                    if(self.mutationinfos[i][1][0] == "X"): #make list of lists for chromosomes and change "X" to "1" and then don't need all the if loops
-                        self.x.append(self.mutations[i])
-                    elif(self.mutationinfos[i][1][0] == "2"):
-                        self.two.append(self.mutations[i])
-                    elif(self.mutationinfos[i][1][0] == "3"):
-                        self.three.append(self.mutations[i])
-                    elif(self.mutationinfos[i][1][0] == "4"):
-                        self.four.append(self.mutations[i])
-                elif(self.mutationinfos[i][1] == []):
-                    if(self.mutationinfos[i][0][0] == "X"):
-                        self.x.append(self.mutations[i])
-                    elif(self.mutationinfos[i][0][0] == "2"):
-                        self.two.append(self.mutations[i])
-                    elif(self.mutationinfos[i][0][0] == "3"):
-                        self.three.append(self.mutations[i])
-                    elif(self.mutationinfos[i][0][0] == "4"):
-                        self.four.append(self.mutations[i])
+            elif(self.mutationinfos[i][0] == [""] or self.mutationinfos[i][1] == [""]): #one wild type and one mutation
+                mutationchromosome = (self.mutationinfos[i][0][0] or self.mutationinfos[i][1][0]) #chromosome 1 is the X chromosome, this chooses the chromosome that goes with the not wild type allele
+                self.listofchromosomes[int(mutationchromosome)-1].append(self.mutations[i])
             elif(self.mutationinfos[i][0][0] == self.mutationinfos[i][1][0]): #both are mutations on same chromosome
-                if(self.mutationinfos[i][0][0] == "X"):
-                    self.x.append(self.mutations[i])
-                elif(self.mutationinfos[i][0][0] == "2"):
-                    self.two.append(self.mutations[i])
-                elif(self.mutationinfos[i][0][0] == "3"):
-                    self.three.append(self.mutations[i])
-                elif(self.mutationinfos[i][0][0] == "4"):
-                    self.four.append(self.mutations[i])
-        for chromosome in [self.x, self.two, self.three, self.four]:
+                self.listofchromosomes[int(self.mutationinfos[i][0][0])-1].append(self.mutations[i])
+        for chromosome in self.listofchromosomes:
             #already took care of if length = 0 because then it is all wild type (line 41)
             if(len(chromosome) == 1): #no linked genes, randomly choose an allele
                 self.alleles[self.mutations.index(chromosome[0])] = random.choice(chromosome[0])
@@ -76,31 +50,31 @@ class Fly:
                     self.alleles[self.mutations.index(chromosome[0])] = chromosome[0][0] #same as chromosome[0][1]
                     self.alleles[self.mutations.index(chromosome[1])] = chromosome[1][0] #same as chromosome[1][1]
                 else: #linked genes, must do crossing over
-                    chrom1 = [chromosome[0][0], chromosome[1][0]]
-                    chrom2 = [chromosome[0][1], chromosome[1][1]]
+                    femalechrom = [chromosome[0][0], chromosome[1][0]] #make female and male instead
+                    malechrom = [chromosome[0][1], chromosome[1][1]]
                     allelespot0 = self.mutations.index(chromosome[0])
                     allelespot1 = self.mutations.index(chromosome[1])
-                    num0 = 0 #finds location on gene for first mutation
-                    num1 = 0 #finds location on gene for second mutation
+                    location0 = 0 #finds location on gene for first mutation
+                    location1 = 0 #finds location on gene for second mutation
                     for eachthingy in chromosome[0]:
-                        if(num0 == 0):
+                        if(location0 == 0):
                             cfile.seek(0)
                             for row in thereader:
                                 if (row[1] == eachthingy):
                                     num0 = float(row[4])
                     for otherthingies in chromosome[1]:
-                        if(num1 == 0):
+                        if(location1 == 0):
                             cfile.seek(0)
                             for row in thereader:
                                 if (row[1] == otherthingies):
                                     num1 = float(row[4])
-                    m = abs(num1-num0)
+                    m = abs(location1-location0)
                     rf = 1/2*(1-math.e**(-m/50)) #mapping function
                     randnumber = random.random()
                     if(randnumber > rf): #no recombination
-                        thechromosome = random.choice([chrom1, chrom2])
-                        self.alleles[allelespot0] = thechromosome[0]
-                        self.alleles[allelespot1] = thechromosome[1]
+                        chromosomechoice = random.choice([femalechrom, malechrom])
+                        self.alleles[allelespot0] =chromosomechoice[0]
+                        self.alleles[allelespot1] = chromosomechoice[1]
                     else:   #recombination
                         randomchoice = random.choice([0, 1])
                         if(randomchoice == 0):
@@ -112,7 +86,7 @@ class Fly:
             self.mutationinfos = [] #going to refill self.mutationinfos with info just for the alleles so mating is easier
             for mut in self.alleles:
                 if (mut == "wild type"):
-                    self.mutationinfos.append([])
+                    self.mutationinfos.append([""])
                 else:
                     cfile.seek(0)
                     for row in thereader:

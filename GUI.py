@@ -148,7 +148,7 @@ while (again):
     offspringphenotypelist = []
     for i in range(0, 1000): #does mating 1000 times
         female = Fly(True, copy.deepcopy(mutationsF))
-        male = Fly(False, mutationsM)
+        male = Fly(False, copy.deepcopy(mutationsM))
         [offspringpart, phenotypepart, offspringphenotypelistpart] = mate(female, male)
         offspring.append(offspringpart)
         phenotype.append(phenotypepart)
