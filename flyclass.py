@@ -11,6 +11,19 @@ class Fly:
         self.mutpair = []
         self.alleles = ["", "", "", "", "", "", ""]
         self.listofchromosomes = [[], [], [], []]
+    def getAlleleLocation(self, chromosome, chromosomeindex):
+        cfile = open("chromosome_layout.csv")
+        thereader = csv.reader(cfile, delimiter=',', quotechar='|')
+        locationvar = 0
+        for allele in chromosome[chromosomeindex]: #make function to do this
+            if(locationvar == 0):
+                cfile.seek(0)
+                for row in thereader:
+                    if (row[1] == allele):
+                        locationvar = float(row[4])
+        cfile.close()
+        return locationvar
+
     def chooseAlleles(self):
         self.mutationinfos = []
         cfile = open("chromosome_layout.csv")
@@ -54,20 +67,8 @@ class Fly:
                     malechrom = [chromosome[0][1], chromosome[1][1]]
                     allelespot0 = self.mutations.index(chromosome[0])
                     allelespot1 = self.mutations.index(chromosome[1])
-                    location0 = 0 #finds location on gene for first mutation
-                    location1 = 0 #finds location on gene for second mutation
-                    for eachthingy in chromosome[0]:
-                        if(location0 == 0):
-                            cfile.seek(0)
-                            for row in thereader:
-                                if (row[1] == eachthingy):
-                                    location0 = float(row[4])
-                    for otherthingies in chromosome[1]:
-                        if(location1 == 0):
-                            cfile.seek(0)
-                            for row in thereader:
-                                if (row[1] == otherthingies):
-                                    location1 = float(row[4])
+                    location0 = self.getAlleleLocation(chromosome, 0) #finds location on gene for first mutation
+                    location1 = self.getAlleleLocation(chromosome, 1) #finds location on gene for second mutation
                     m = abs(location1-location0)
                     rf = 1/2*(1-math.e**(-m/50)) #mapping function
                     randnumber = random.random()
@@ -91,27 +92,9 @@ class Fly:
                     self.alleles[self.mutations.index(chromosome[1])] = chromosome[1][0] #same as chromosome[1][1]
                     self.alleles[self.mutations.index(chromosome[2])] = chromosome[2][0] #same as chromosome[2][1]
                 else: #must do crossing over
-                    threelocation0 = 0
-                    threelocation1 = 0
-                    threelocation2 = 0
-                    for allele in chromosome[0]: #make function to do this
-                        if(threelocation0 == 0):
-                            cfile.seek(0)
-                            for row in thereader:
-                                if (row[1] == allele):
-                                    threelocation0 = float(row[4])
-                    for allele in chromosome[1]:
-                        if(threelocation1 == 0):
-                            cfile.seek(0)
-                            for row in thereader:
-                                if (row[1] == allele):
-                                    threelocation1 = float(row[4])
-                    for allele in chromosome[2]:
-                        if(threelocation2 == 0):
-                            cfile.seek(0)
-                            for row in thereader:
-                                if (row[1] == allele):
-                                    threelocation2 = float(row[4])
+                    threelocation0 = self.getAlleleLocation(chromosome, 0)
+                    threelocation1 = self.getAlleleLocation(chromosome, 1)
+                    threelocation2 = self.getAlleleLocation(chromosome, 2)
                     morgans01 = abs(threelocation0-threelocation1)
                     morgans12 = abs(threelocation1-threelocation2)
                     morgans20 = abs(threelocation2-threelocation0)
