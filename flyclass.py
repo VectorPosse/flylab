@@ -11,11 +11,11 @@ class Fly:
         self.mutpair = []
         self.alleles = ["", "", "", "", "", "", ""]
         self.listofchromosomes = [[], [], [], []]
-    def getAlleleLocation(self, chromosome, chromosomeindex):
+    def getAlleleLocation(self, chromosome, chromosomeindex): #for linked genes, finds location on chromosome
         cfile = open("chromosome_layout.csv")
         thereader = csv.reader(cfile, delimiter=',', quotechar='|')
         locationvar = 0
-        for allele in chromosome[chromosomeindex]: #make function to do this
+        for allele in chromosome[chromosomeindex]:
             if(locationvar == 0):
                 cfile.seek(0)
                 for row in thereader:
