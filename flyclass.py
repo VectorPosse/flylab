@@ -3,7 +3,8 @@ import csv
 import random
 import math
 class Fly:
-    def __init__(self, female, mutations):
+    def __init__(self, female, mutations, gen):
+        self.gen = gen
         self.female = female
         self.mutations = mutations
         self.mutationinfos = []
@@ -11,6 +12,9 @@ class Fly:
         self.mutpair = []
         self.alleles = ["", "", "", "", "", "", ""]
         self.listofchromosomes = [[], [], [], []]
+        self.sex = []
+        self.sexallele = []
+
     def getAlleleLocation(self, chromosome, chromosomeindex): #for linked genes, finds location on chromosome
         cfile = open("chromosome_layout.csv")
         thereader = csv.reader(cfile, delimiter=',', quotechar='|')
@@ -25,14 +29,21 @@ class Fly:
         return locationvar
 
     def chooseAlleles(self):
+        del(self.mutations[0]) #remove sex because it isn't a mutation
         self.mutationinfos = []
+        if(self.female):
+            self.sex = ["x", "x"]
+        else:
+            self.sex = ["x", "y"]
+        #print(self.sex)
         cfile = open("chromosome_layout.csv")
         thereader = csv.reader(cfile, delimiter=',', quotechar='|')
         for i in range(0, 7):
             self.mutpair = []
             lethal = False
+            sexlinked = False
             for allele in self.mutations[i]:
-                if (allele == "wild type"):
+                if (allele == "wild type" or allele == ""):
                     self.mutpair.append([""])
                 else:
                     cfile.seek(0)
@@ -41,11 +52,19 @@ class Fly:
                             self.mutpair.append(row)
                             if (row[5] == "yes"): #check to see if lethal, if it is, make heterozygous
                                 lethal = True
+                            if (row[0] == "1" and self.female == False): #check to see if it is on x chromosome
+                                sexlinked = True
+            if(sexlinked == True and self.mutations[i][0] == self.mutations[i][1]):
+                self.mutpair[1] = [""]
+                self.mutations[i][1] = ""
             if(lethal == True and self.mutations[i][0] == self.mutations[i][1]):
                 spot = random.choice([0, 1])
                 self.mutpair[spot] = [""]
                 self.mutations[i][spot] = "wild type"
             self.mutationinfos.append(self.mutpair)
+        #print("Mutations: ", self.mutations, " Mutation infos: ", self.mutationinfos)
+        #DETERMINE WHICH SEX ALLELE WILL BE PASSED ON
+        self.sexallele = random.choice(self.sex)
         for i in range(0, 7): #cycle through each pair of mutation infos and puts them in lists based on chromosomes
             if(self.mutationinfos[i][0] == [""] and self.mutationinfos[i][1] == [""]):
                 self.alleles[i] = "wild type"
@@ -55,15 +74,28 @@ class Fly:
             elif(self.mutationinfos[i][0][0] == self.mutationinfos[i][1][0]): #both are mutations on same chromosome
                 self.listofchromosomes[int(self.mutationinfos[i][0][0])-1].append(self.mutations[i])
         for chromosome in self.listofchromosomes:
-            #already took care of if length = 0 because then it is all wild type (line 41)
+            #already took care of if length = 0 because then it is all wild type (line 43)
             if(len(chromosome) == 1): #no linked genes, randomly choose an allele
-                self.alleles[self.mutations.index(chromosome[0])] = random.choice(chromosome[0])
+                if(self.female == False and self.listofchromosomes.index(chromosome) == 0): #male and gene is on X chromosome
+                        if(self.sexallele == "x"):
+                            self.alleles[self.mutations.index(chromosome[0])] = chromosome[0][0]
+                        else:
+                            self.alleles[self.mutations.index(chromosome[0])] = chromosome[0][1]
+                else:
+                    self.alleles[self.mutations.index(chromosome[0])] = random.choice(chromosome[0])
             if(len(chromosome) == 2): #linked genes
-                if(chromosome[0][0] == chromosome[0][1] and chromosome[1][0] == chromosome[1][1]): #crossing over doesn't change alleles
+                if(self.female == False and self.listofchromosomes.index(chromosome) == 0): #male and X chromosome, no crossing over because only one chromosome
+                    if(self.sexallele == "x"):
+                        self.alleles[self.mutations.index(chromosome[0])] = chromosome[0][0]
+                        self.alleles[self.mutations.index(chromosome[1])] = chromosome[1][0]
+                    else: #passing on Y chromosome, which lacks these mutations
+                        self.alleles[self.mutations.index(chromosome[0])] = ""
+                        self.alleles[self.mutations.index(chromosome[1])] = ""
+                elif(chromosome[0][0] == chromosome[0][1] and chromosome[1][0] == chromosome[1][1]): #crossing over doesn't change alleles
                     self.alleles[self.mutations.index(chromosome[0])] = chromosome[0][0] #same as chromosome[0][1]
                     self.alleles[self.mutations.index(chromosome[1])] = chromosome[1][0] #same as chromosome[1][1]
                 else: #linked genes, must do crossing over
-                    femalechrom = [chromosome[0][0], chromosome[1][0]] #make female and male instead
+                    femalechrom = [chromosome[0][0], chromosome[1][0]]
                     malechrom = [chromosome[0][1], chromosome[1][1]]
                     allelespot0 = self.mutations.index(chromosome[0])
                     allelespot1 = self.mutations.index(chromosome[1])
@@ -85,6 +117,7 @@ class Fly:
                             self.alleles[allelespot0] = chromosome[0][1]
                             self.alleles[allelespot1] = chromosome[1][0]
             if(len(chromosome) == 3): #three linked genes
+                #No sex stuff here yet because we only have 2 genes on X chromosome thus far
                 femalechromosome = [chromosome[0][0], chromosome[1][0], chromosome[2][0]]
                 malechromosome = [chromosome[0][1], chromosome[1][1], chromosome[2][1]]
                 if(femalechromosome == malechromosome): #no recombination
@@ -159,6 +192,8 @@ class Fly:
                         self.alleles[threeAllelespot0] = chromosomechoice[0]
                         self.alleles[threeAllelespot1] = chromosomechoice[1]
                         self.alleles[threeAllelespot2] = chromosomechoice[2]
+        #print("GEN: ", self.gen)
+        #print("alleles: ", self.alleles, "Sex alleles: ", self.sexallele)
         self.mutationinfos = [] #going to refill self.mutationinfos with info just for the alleles so mating is easier
         for mut in self.alleles:
             if (mut == "wild type"):
@@ -169,5 +204,4 @@ class Fly:
                     if (row[1] == mut):
                         self.mutationinfos.append(row)
                         break
-
-        return self.alleles, self.mutationinfos
+        return self.alleles, self.mutationinfos, self.sexallele

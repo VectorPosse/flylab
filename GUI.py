@@ -7,7 +7,7 @@ def windowSettings(windowName):
     top.minsize(500, 500)
     top.wm_title("Fly Mating")
     h = 500
-    w = 500
+    w = 600
     ws = top.winfo_screenwidth()
     hs = top.winfo_screenheight()
     x = (ws/2) - (h/2)
@@ -15,10 +15,16 @@ def windowSettings(windowName):
     windowName.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
 def mate(female, male):
-    [fAlleles, fMutations] = female.chooseAlleles()
-    [mAlleles, mMutations] = male.chooseAlleles()
-    phenotype = [] #keeps track of which is phenotype
+    [fAlleles, fMutations, fsexallele] = female.chooseAlleles()
+    [mAlleles, mMutations, msexallele] = male.chooseAlleles()
+    phenotype = [0] #keeps track of which is phenotype, starts out with one zero for sex
     offspring = [] #always ordered female,male so you can do the linked genes and know parent phenotypes
+    if(fsexallele == msexallele == "x"): #female
+        offspring.append(["female"])
+    elif(fsexallele == "x" and msexallele == "y"):
+        offspring.append(["male"])
+    else:
+        print("ERROR IN THE SEX DETERMINATION")
     for i in range(0, 7):
         if (fAlleles[i] == "wild type" and mAlleles[i] == "wild type"):
             offspring.append(["wild type", "wild type"])
@@ -32,19 +38,28 @@ def mate(female, male):
                 else:
                     offspring.append([fAlleles[i], mAlleles[i]])
                     phenotype.append(0)
+            elif(fAlleles[i] != "wild type" and mAlleles[i] == ""): #sex linked, male, will display mutation whether dominant or recessive
+                offspring.append([fAlleles[i], mAlleles[i]])
+                phenotype.append(0)
             else:
                 print("FEMALE ALLELE: ", fAlleles[i], " MALE ALLELE: ", mAlleles[i])
                 print("NOPE") #This cannot happen in flylab
         elif (fAlleles[i] != "wild type" or mAlleles[i] != "wild type"):
             if(fAlleles[i] != "wild type"):
-                if(fMutations[i][3] == "no"):
+                if(fMutations[i][0] == "1" and offspring[0][0] == "male"): #sex linked male - female mutation will appear no matter what
+                    offspring.append([fAlleles[i], ""])
+                    phenotype.append(0)
+                elif(fMutations[i][3] == "no"):
                     offspring.append([fAlleles[i], "wild type"])#One that comes first in offspring list is female
                     phenotype.append(1)
                 else:
                     offspring.append([fAlleles[i], "wild type"])
                     phenotype.append(0)
             else:
-                if(mMutations[i][3] == "no"):
+                if(mAlleles[i] == ""): #sex linked, female is wild type and male is mutant but chose Y chromosome
+                    offspring.append(["wild type", ""])
+                    phenotype.append(0)
+                elif(mMutations[i][3] == "no"):
                     offspring.append(["wild type", mAlleles[i]])
                     phenotype.append(0)
                 else:
@@ -52,7 +67,7 @@ def mate(female, male):
                     phenotype.append(1)
     offspringphenotypelist = [] #the phenotypes that will actually be displayed
     if(len(offspring) > 1):
-        for i in range(0, 7):
+        for i in range(0, 8): #skips over sex
             offspringphenotypelist.append(offspring[i][phenotype[i]])
     else:
         offspringphenotypelist = ["dead"]
@@ -60,9 +75,10 @@ def mate(female, male):
 
 again = True
 offspringCanUse = False
+generation = 1
 while (again):
-    mutationsF = []
-    mutationsM = []
+    mutationsF = [["female"]]
+    mutationsM = [["male"]]
     for i in range(1, 3):
         top = Tk()
         windowSettings(top)
@@ -99,10 +115,25 @@ while (again):
             #gotta make sure offspring aren't dead
             global mutationsF
             global mutationsM
+            global generation
             if (i == 1):
-                mutationsF = offspring[0]
+                for j in range(0, 1000): #Must find a female
+                    print(offspring[j][0])
+                    if(offspring[j][0] == ["female"]):
+                        mutationsF = offspring[j]
+                        generation += 1
+                        print("mutationsF: ", mutationsF)
+                        break
+                    else:
+                        continue
             else:
-                mutationsM = offspring[0]
+                for j in range(0, 1000): #Must find a male
+                    if(offspring[j][0] == ["male"]):
+                        mutationsM = offspring[j]
+                        generation += 1
+                        break
+                    else:
+                        continue
             top.destroy()
 
         eyecolors = OptionMenu(top, var1, "wild type", "purple eyes", "brown eyes", "white eyes")
@@ -148,8 +179,8 @@ while (again):
     phenotype = []
     offspringphenotypelist = []
     for i in range(0, 1000): #does mating 1000 times
-        female = Fly(True, copy.deepcopy(mutationsF))
-        male = Fly(False, copy.deepcopy(mutationsM))
+        female = Fly(True, copy.deepcopy(mutationsF), generation)
+        male = Fly(False, copy.deepcopy(mutationsM), generation)
         [offspringpart, phenotypepart, offspringphenotypelistpart] = mate(female, male)
         offspring.append(offspringpart)
         phenotype.append(phenotypepart)

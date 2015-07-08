@@ -10,4 +10,14 @@ yes = Counter(str(e) for e in data)
 
 l = [""]
 l2 = ["1"]
-print(l[0] or l2[0])
+#print(l[0] or l2[0])
+
+me = [1,2,3]
+me.insert(0,1)
+print(me)
+
+for i in range(0,5):
+    if(i == 2):
+        print(i)
+    else:
+        continue
