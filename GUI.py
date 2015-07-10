@@ -118,11 +118,9 @@ while (again):
             global generation
             if (i == 1):
                 for j in range(0, 1000): #Must find a female
-                    print(offspring[j][0])
                     if(offspring[j][0] == ["female"]):
                         mutationsF = offspring[j]
                         generation += 1
-                        print("mutationsF: ", mutationsF)
                         break
                     else:
                         continue
