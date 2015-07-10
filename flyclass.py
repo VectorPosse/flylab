@@ -35,7 +35,6 @@ class Fly:
             self.sex = ["x", "x"]
         else:
             self.sex = ["x", "y"]
-        #print(self.sex)
         cfile = open("chromosome_layout.csv")
         thereader = csv.reader(cfile, delimiter=',', quotechar='|')
         for i in range(0, 7):
@@ -62,7 +61,6 @@ class Fly:
                 self.mutpair[spot] = [""]
                 self.mutations[i][spot] = "wild type"
             self.mutationinfos.append(self.mutpair)
-        #print("Mutations: ", self.mutations, " Mutation infos: ", self.mutationinfos)
         #DETERMINE WHICH SEX ALLELE WILL BE PASSED ON
         self.sexallele = random.choice(self.sex)
         for i in range(0, 7): #cycle through each pair of mutation infos and puts them in lists based on chromosomes
@@ -153,6 +151,7 @@ class Fly:
                     threeAllelespot0 = self.mutations.index(chromosome[order[0]])
                     threeAllelespot1 = self.mutations.index(chromosome[order[1]])
                     threeAllelespot2 = self.mutations.index(chromosome[order[2]])
+                    #CHROMOSOME IS NOW ORDERED
                     rfmin = 1/2*(1-math.e**(-sortedmorgans[0]/50))
                     rfmiddle = 1/2*(1-math.e**(-sortedmorgans[1]/50))
                     rfdoublerecombination = rfmin*rfmiddle
@@ -192,8 +191,6 @@ class Fly:
                         self.alleles[threeAllelespot0] = chromosomechoice[0]
                         self.alleles[threeAllelespot1] = chromosomechoice[1]
                         self.alleles[threeAllelespot2] = chromosomechoice[2]
-        #print("GEN: ", self.gen)
-        #print("alleles: ", self.alleles, "Sex alleles: ", self.sexallele)
         self.mutationinfos = [] #going to refill self.mutationinfos with info just for the alleles so mating is easier
         for mut in self.alleles:
             if (mut == "wild type"):
