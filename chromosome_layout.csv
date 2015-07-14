@@ -13,4 +13,4 @@ Chromosome,Name,Abbreviation,Dominant,Number,Lethal
 4,shaven bristles,sv,no,3,no
 2,apterous wings,ap,no,55.4,no
 3,aristapedia,ssa,no,58.5,yes
-3,incomplete wing vein,,no,,no
+3,incomplete wing vein,,no,47,no
