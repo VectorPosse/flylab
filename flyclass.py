@@ -4,16 +4,16 @@ import random
 import math
 class Fly:
     def __init__(self, female, mutations, gen):
-        self.gen = gen
-        self.female = female
-        self.mutations = mutations
-        self.mutationinfos = []
-        self.chromosomenum = []
-        self.mutpair = []
-        self.alleles = ["", "", "", "", "", "", ""]
-        self.listofchromosomes = [[], [], [], []]
-        self.sex = []
-        self.sexallele = []
+        self.gen = gen #for testing purposes
+        self.female = female #either true or false
+        self.mutations = mutations #list of mutations, first index is mutation (0 through 6), second index is allele (0 is female, 1 is male)
+        self.mutationinfos = [] #fisrt index is mutation (0 through 6), second index is allele (0 or 1), third index is specific data (0 through 5)
+        #self.chromosomenum = [] #DO I NEED THIS /\/\/\ WHAT IS THIS
+        self.mutpair = [] #each pair that is appended to self.mutationinfos
+        self.alleles = ["", "", "", "", "", "", ""] #alleles that will be returned from chooseAlleles()
+        self.listofchromosomes = [[], [], [], []] #chromosome 1 is the X chromosome
+        self.sex = [] #[x,x] if female, [x,y] if male
+        self.sexallele = "" #either x or y; randomly chosen from self.sex
 
     def getAlleleLocation(self, chromosome, chromosomeindex): #for linked genes, finds location on chromosome
         cfile = open("chromosome_layout.csv")
@@ -67,7 +67,7 @@ class Fly:
             if(self.mutationinfos[i][0] == [""] and self.mutationinfos[i][1] == [""]):
                 self.alleles[i] = "wild type"
             elif(self.mutationinfos[i][0] == [""] or self.mutationinfos[i][1] == [""]): #one wild type and one mutation
-                mutationchromosome = (self.mutationinfos[i][0][0] or self.mutationinfos[i][1][0]) #chromosome 1 is the X chromosome, this chooses the chromosome that goes with the not wild type allele
+                mutationchromosome = (self.mutationinfos[i][0][0] or self.mutationinfos[i][1][0]) #this chooses the chromosome that goes with the not wild type allele
                 self.listofchromosomes[int(mutationchromosome)-1].append(self.mutations[i])
             elif(self.mutationinfos[i][0][0] == self.mutationinfos[i][1][0]): #both are mutations on same chromosome
                 self.listofchromosomes[int(self.mutationinfos[i][0][0])-1].append(self.mutations[i])
