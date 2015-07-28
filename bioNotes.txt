@@ -13,3 +13,19 @@ if greater than that do x, if not do y
 mate with chromosomes not traits?
 
 find info for other traits
+
+
+DO:::
+
+epistasis:
+incomplete wing vein and vestigial
+
+9 wild type
+4 vestigial
+3 incomplete wing vein
+
+
+
+make offspring choosable by phenotype
+
+do male/female button
