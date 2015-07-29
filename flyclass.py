@@ -3,8 +3,7 @@ import csv
 import random
 import math
 class Fly:
-    def __init__(self, female, mutations, gen):
-        self.gen = gen #for testing purposes
+    def __init__(self, female, mutations):
         self.female = female #either true or false
         self.mutations = mutations #list of mutations, first index is mutation (0 through 6), second index is allele (0 is female, 1 is male)
         self.mutationinfos = [] #fisrt index is mutation (0 through 6), second index is allele (0 or 1), third index is specific data (0 through 5)

@@ -86,19 +86,11 @@ def createFly(i):
     top = Tk()
     windowSettings(top)
     femaleL = Label(top, text="CHOOSE FEMALE MUTATIONS")
-    femaleOffspringL = Label(top, text="CHOOSE FEMALE MUTATIONS OR USE OFFSPRING")
     maleL = Label(top, text="CHOOSE MALE MUTATIONS")
-    maleOffspringL = Label(top, text="CHOOSE MALE MUTATIONS OR USE OFFSPRING")
     if(i == 1):
-        if(offspringCanUse):
-            femaleOffspringL.pack()
-        else:
-            femaleL.pack()
+        femaleL.pack()
     else:
-        if(offspringCanUse):
-            maleOffspringL.pack()
-        else:
-            maleL.pack()
+        maleL.pack()
     var1 = StringVar(top)
     var1.set("wild type")
     var2 = StringVar(top)
@@ -115,8 +107,6 @@ def createFly(i):
     var7.set("wild type")
     var8 = StringVar(top)
     var8.set("wild type")
-    varOffspring = StringVar(top)
-    varOffspring.set("choose offspring")
 
     eyecolors = OptionMenu(top, var1, "wild type", "purple eyes", "brown eyes", "white eyes")
     eyecolorsL = Label(top, text="Eye Colors:")
@@ -134,7 +124,6 @@ def createFly(i):
     antennaeshapesL = Label(top, text="Antennae Shapes:")
     wingveins = OptionMenu(top, var8, "wild type", "incomplete wing vein")
     wingveinsL = Label(top, text="Wing Veins: ")
-    #offspringButton
     characteristics = [eyecolors, eyeshapes, bristles, wingshapes, wingsize, bodycolor, antennaeshapes, wingveins]
     labels = [eyecolorsL, eyeshapesL, bristlesL, wingshapesL, wingsizeL, bodycolorL, antennaeshapesL, wingveinsL]
     v = [var1, var2, var3, var4, var5, var6, var7, var8]
@@ -142,10 +131,7 @@ def createFly(i):
         labels[characteristics.index(c)].pack()
         c.pack()
 
-    #if(offspringCanUse):
-        #offspringMenu.pack()
-
-    def backCallBack():
+    def backCallBack(): #command for continue button
         global mutationsF
         global mutationsM
         for var in v:
@@ -160,10 +146,7 @@ def createFly(i):
     top.mainloop()
 
 again = True
-offspringCanUse = False
-chooseMutations = True
 firstTime = True
-generation = 1
 offspringlist = []
 mutationsF = [["female"]]
 mutationsM = [["male"]]
@@ -175,10 +158,9 @@ while (again):
             createFly(i)
     offspring = []
     offspringphenotypelist = []
-    #print("PREMATING: ", mutationsM, mutationsF)
     for i in range(0, 1000): #does mating 1000 times
-        female = Fly(True, copy.deepcopy(mutationsF), generation)
-        male = Fly(False, copy.deepcopy(mutationsM), generation)
+        female = Fly(True, copy.deepcopy(mutationsF))
+        male = Fly(False, copy.deepcopy(mutationsM))
         [offspringpart,  offspringphenotypelistpart] = mate(female, male)
         offspring.append(offspringpart)
         offspringphenotypelist.append(offspringphenotypelistpart)
@@ -215,17 +197,11 @@ while (again):
     def useOffspringCallback(index):
         global mutationsF
         global mutationsM
-        global generation
-        global chooseMutations
         if(offspringlist[index][0][0] == "female"):
             mutationsF = offspring[offspringphenotypelist.index(offspringlist[index][0])]
-            #print(mutationsF)
         elif(offspringlist[index][0][0] == "male"):
             mutationsM = offspring[offspringphenotypelist.index(offspringlist[index][0])]
-            #print(mutationsM)
         if(len(mutationsM) > 1 and len(mutationsF) > 1):
-            chooseMutations = False
-            #print("GOT MUTATIONS: ",mutationsM, mutationsF)
             bottom.destroy()
 
     def obutton1callback():
@@ -281,8 +257,19 @@ while (again):
         createFly(2)
 
     def mateBcallback():
-        bottom.destroy()
-
+        if(len(mutationsF) > 1 and len(mutationsM) > 1):
+            bottom.destroy()
+        elif(len(mutationsF) == 1 and len(mutationsM) == 1):
+            errorboth.pack()
+        elif(len(mutationsF) == 1):
+            errorF.pack()
+        elif(len(mutationsM) == 1):
+            errorM.pack()
+        else:
+            print("something happened")
+    errorboth = Label(bottom, text="Please choose two flies to mate", fg="red")
+    errorF = Label(bottom, text="Please design female fly", fg="red")
+    errorM = Label(bottom, text="Please design male fly", fg="red")
     designFemaleB = Button(bottom, text="Design Female", command=designFemale)
     designMaleB = Button(bottom, text="Design Male", command=designMale)
     mateB = Button(bottom, text="MATE", command=mateBcallback)
