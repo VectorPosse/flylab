@@ -2,18 +2,7 @@ recombination frequency of 1% = 1 centimorgan (cM)
 2n = 4  which means two sets of chromosomes with 2 chromosomes in each set
 the fly is called drosophila
 fourth chromosome is often ignored because it is tiny but there are genes we need on it
-male/female is not determine by XX and XY, calculate X chromosome to number of autosomes. 1:1 means female, 1:2 means male.
 1/2(1-e^(-2m))  m=1 morgan (centimorgan/100)
-
-do:
-random number [0,1]
-get RF
-if greater than that do x, if not do y
-
-mate with chromosomes not traits?
-
-find info for other traits
-
 
 DO:::
 

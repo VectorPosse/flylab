@@ -17,78 +17,67 @@ def windowSettings(windowName):
 def mate(female, male):
     [fAlleles, fMutations, fsexallele] = female.chooseAlleles()
     [mAlleles, mMutations, msexallele] = male.chooseAlleles()
-    epistatic = "" #will be filled if a mutation is epistatic to another !!(currently only works if other mutation comes first)!!
-    phenotype = [0] #keeps track of which is phenotype, starts out with one zero for sex
+    epistatic = "" #will be filled if a mutation is epistatic to another
     offspring = [] #always ordered female,male so you can do the linked genes and know parent phenotypes
-    deleteme = -1
+    offspringphenotypelist = [] #the phenotypes that will actually be displayed
     if(fsexallele == msexallele == "x"): #female
         offspring.append(["female"])
+        offspringphenotypelist.append("female")
     elif(fsexallele == "x" and msexallele == "y"):
         offspring.append(["male"])
+        offspringphenotypelist.append("male")
     else:
         print("ERROR IN THE SEX DETERMINATION")
+    for i in range(0, 8): #check to see if there are any mutations that have another mutation that is epistatic to them
+        if(fAlleles[i] == mAlleles[i] and fAlleles[i] != "wild type"):
+            if(fMutations[i][7] != "" and fMutations[i][6] == "no"):
+                epistatic = fMutations[i][7]
     for i in range(0, 8):
         if (fAlleles[i] == "wild type" and mAlleles[i] == "wild type"):
             offspring.append(["wild type", "wild type"])
-            phenotype.append(0)
         if(fAlleles[i] != "wild type" and mAlleles[i] != "wild type"):
             if(fAlleles[i] == mAlleles[i]):
-                if(fMutations[i][7] != ""):
-                    if(fMutations[i][6] == "no"):
-                        epistatic = fMutations[i][7]
                 if(fAlleles[i] == epistatic):
-                    offspring.append([fAlleles[i], mAlleles[i], "wild type"]) #you can't tell the phenotype so just call it wild type - will delete later
-                    phenotype.append(2)
-                    deleteme = len(offspring)-1 #gives first index for the list with 3 elements instead of two (need to delete it after printing phenotypes)
-                if(fMutations[i][5] == "yes"): #lethal  #could be mMutations but they are the same so it doesn't matter
+                    offspring.append([fAlleles[i], mAlleles[i]]) #you can't tell the phenotype so just call it wild type
+                #currently saying lethal and epistatic are mutually exclusive - don't know if its true but otherwise epistatic goes to else statement too
+                elif(fMutations[i][5] == "yes"): #lethal  #could be mMutations but they are the same so it doesn't matter
                     offspring = [["dead"]]
-                    phenotype = [0]
+                    offspringphenotypelist = ["dead"]
                     break
                 else:
                     offspring.append([fAlleles[i], mAlleles[i]])
-                    phenotype.append(0)
+                    offspringphenotypelist.append(fAlleles[i])
             elif(fAlleles[i] != "wild type" and mAlleles[i] == ""): #sex linked, male, will display mutation whether dominant or recessive
                 offspring.append([fAlleles[i], mAlleles[i]])
-                phenotype.append(0)
+                offspringphenotypelist.append(fAlleles[i])
             else:
                 print("FEMALE ALLELE: ", fAlleles[i], " MALE ALLELE: ", mAlleles[i])
                 print("NOPE") #This cannot happen in flylab
         elif (fAlleles[i] != "wild type" or mAlleles[i] != "wild type"):
             if(fAlleles[i] != "wild type"):
                 if(fAlleles[i] == epistatic):
-                    offspring.append([fAlleles[i], "wild type"])
-                    phenotype.append(1) #not TECHNICALLY this if it is dominant but it doesn't show up b/c it is epistatic to something
-                if(fMutations[i][0] == "1" and offspring[0][0] == "male"): #sex linked male - female mutation will appear no matter what
+                    offspring.append([fAlleles[i], "wild type"]) #doesn't show up at all though because its epistatic
+                elif(fMutations[i][0] == "1" and offspring[0][0] == "male"): #sex linked male - female mutation will appear no matter what
                     offspring.append([fAlleles[i], ""])
-                    phenotype.append(0)
+                    offspringphenotypelist.append(fAlleles[i])
                 elif(fMutations[i][3] == "no"): #recessive
                     offspring.append([fAlleles[i], "wild type"])#One that comes first in offspring list is female
-                    phenotype.append(1)
                 else: #dominant
                     offspring.append([fAlleles[i], "wild type"])
-                    phenotype.append(0)
+                    offspringphenotypelist.append(fAlleles[i])
             else: #male has mutation
                 if(mAlleles[i] == epistatic):
-                    offspring.append(["wild type", mAlleles[i]])
-                    phenotype.append(0) #epistatic to another gene so nothing will show up
-                if(mAlleles[i] == ""): #sex linked, female is wild type and male is mutant but chose Y chromosome
+                    offspring.append(["wild type", mAlleles[i]]) #epistatic so nothing will show up
+                elif(mAlleles[i] == ""): #sex linked, female is wild type and male is mutant but chose Y chromosome
                     offspring.append(["wild type", ""])
-                    phenotype.append(0)
                 elif(mMutations[i][3] == "no"):
                     offspring.append(["wild type", mAlleles[i]])
-                    phenotype.append(0)
                 else:
                     offspring.append(["wild type", mAlleles[i]])
-                    phenotype.append(1)
-    offspringphenotypelist = [] #the phenotypes that will actually be displayed
-    if(len(offspring) > 1):
-        for i in range(0, 9): #skips over sex
-            offspringphenotypelist.append(offspring[i][phenotype[i]])
-    else:
-        offspringphenotypelist = ["dead"]
-    if(deleteme != -1):
-        del (offspring[deleteme][2])
-    return offspring, phenotype, offspringphenotypelist
+                    offspringphenotypelist.append(mAlleles[i])
+    if(len(offspringphenotypelist) == 1 and offspringphenotypelist[0] != "dead"):
+        offspringphenotypelist.append("wild type") #otherwise will just print male or female
+    return offspring, offspringphenotypelist
 
 again = True
 offspringCanUse = False
@@ -195,14 +184,13 @@ while (again):
         top.mainloop()
 
     offspring = []
-    phenotype = []
+    #phenotype = []
     offspringphenotypelist = []
     for i in range(0, 1000): #does mating 1000 times
         female = Fly(True, copy.deepcopy(mutationsF), generation)
         male = Fly(False, copy.deepcopy(mutationsM), generation)
-        [offspringpart, phenotypepart, offspringphenotypelistpart] = mate(female, male)
+        [offspringpart,  offspringphenotypelistpart] = mate(female, male)
         offspring.append(offspringpart)
-        phenotype.append(phenotypepart)
         offspringphenotypelist.append(offspringphenotypelistpart)
 
     from collections import Counter  #this counts how many times each PHENOTYPE appears
@@ -228,12 +216,10 @@ while (again):
 
     newfly = Label(top, text = "Offspring")
     offspringgenotypelabel = Label(top, text = offspringphenotypelistUse)
-    mutationtypesL = Label(top, text = "Eye Color  Eye Shape  Bristles  Wing Shape  Wing Size  Body Color  Antennae Shape")
     anotherCross = Button(top, text = "Perform another cross", command = anotherCrossCommand) #can use offspring
     newCross = Button(top, text = "Perform a new cross", command = newCrossCommand)
     quit = Button(top, text = "QUIT", command = quitCallBack)
     newfly.pack()
-    mutationtypesL.pack()
     offspringgenotypelabel.pack()
     anotherCross.pack(side=LEFT)
     newCross.pack(side=RIGHT)

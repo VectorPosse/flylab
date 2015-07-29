@@ -21,3 +21,11 @@ for i in range(0,5):
         print(i)
     else:
         continue
+
+meme = 1
+if(meme<2):
+    print("less than 2")
+if(meme == 2):
+    print(2)
+else:
+    print(meme)
