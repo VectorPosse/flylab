@@ -4,12 +4,12 @@ from flyclass import Fly
 import copy
 
 def windowSettings(windowName):
-    top.minsize(500, 500)
-    top.wm_title("Fly Mating")
-    h = 500
+    windowName.minsize(500, 500)
+    windowName.wm_title("Fly Mater")
+    h = 600
     w = 700
-    ws = top.winfo_screenwidth()
-    hs = top.winfo_screenheight()
+    ws = windowName.winfo_screenwidth()
+    hs = windowName.winfo_screenheight()
     x = (ws/2) - (h/2)
     y = (hs/2) - (h/2)
     windowName.geometry('%dx%d+%d+%d' % (w, h, x, y))
@@ -79,149 +79,217 @@ def mate(female, male):
         offspringphenotypelist.append("wild type") #otherwise will just print male or female
     return offspring, offspringphenotypelist
 
+def createFly(i):
+    global mutationsF
+    global mutationsM
+    global top
+    top = Tk()
+    windowSettings(top)
+    femaleL = Label(top, text="CHOOSE FEMALE MUTATIONS")
+    femaleOffspringL = Label(top, text="CHOOSE FEMALE MUTATIONS OR USE OFFSPRING")
+    maleL = Label(top, text="CHOOSE MALE MUTATIONS")
+    maleOffspringL = Label(top, text="CHOOSE MALE MUTATIONS OR USE OFFSPRING")
+    if(i == 1):
+        if(offspringCanUse):
+            femaleOffspringL.pack()
+        else:
+            femaleL.pack()
+    else:
+        if(offspringCanUse):
+            maleOffspringL.pack()
+        else:
+            maleL.pack()
+    var1 = StringVar(top)
+    var1.set("wild type")
+    var2 = StringVar(top)
+    var2.set("wild type")
+    var3 = StringVar(top)
+    var3.set("wild type")
+    var4 = StringVar(top)
+    var4.set("wild type")
+    var5 = StringVar(top)
+    var5.set("wild type")
+    var6 = StringVar(top)
+    var6.set("wild type")
+    var7 = StringVar(top)
+    var7.set("wild type")
+    var8 = StringVar(top)
+    var8.set("wild type")
+    varOffspring = StringVar(top)
+    varOffspring.set("choose offspring")
+
+    eyecolors = OptionMenu(top, var1, "wild type", "purple eyes", "brown eyes", "white eyes")
+    eyecolorsL = Label(top, text="Eye Colors:")
+    eyeshapes = OptionMenu(top, var2, "wild type", "lobe eyes", "eyeless")
+    eyeshapesL = Label(top, text="Eye Shapes:")
+    bristles = OptionMenu(top, var3, "wild type", "shaven bristles", "stubble bristles")
+    bristlesL = Label(top, text="Bristles:")
+    wingshapes = OptionMenu(top, var4, "wild type", "apterous wings", "curly wings")
+    wingshapesL = Label(top, text="Wing Shapes:")
+    wingsize = OptionMenu(top, var5, "wild type", "vestigial wings")
+    wingsizeL = Label(top, text="Wing Sizes:")
+    bodycolor = OptionMenu(top, var6, "wild type", "ebony body", "black body", "tan body")
+    bodycolorL = Label(top, text="Body Colors:")
+    antennaeshapes = OptionMenu(top, var7, "wild type", "aristapedia")
+    antennaeshapesL = Label(top, text="Antennae Shapes:")
+    wingveins = OptionMenu(top, var8, "wild type", "incomplete wing vein")
+    wingveinsL = Label(top, text="Wing Veins: ")
+    #offspringButton
+    characteristics = [eyecolors, eyeshapes, bristles, wingshapes, wingsize, bodycolor, antennaeshapes, wingveins]
+    labels = [eyecolorsL, eyeshapesL, bristlesL, wingshapesL, wingsizeL, bodycolorL, antennaeshapesL, wingveinsL]
+    v = [var1, var2, var3, var4, var5, var6, var7, var8]
+    for c in characteristics:
+        labels[characteristics.index(c)].pack()
+        c.pack()
+
+    #if(offspringCanUse):
+        #offspringMenu.pack()
+
+    def backCallBack():
+        global mutationsF
+        global mutationsM
+        for var in v:
+            trait = var.get()
+            if(i == 1):
+                mutationsF.append([trait, trait]) #appends both alleles
+            else:
+                mutationsM.append([trait, trait]) #appends both alleles
+        top.destroy()
+    back = Button(top, text="CONTINUE", command=backCallBack)
+    back.pack()
+    top.mainloop()
+
 again = True
 offspringCanUse = False
+chooseMutations = True
+firstTime = True
 generation = 1
+offspringlist = []
+mutationsF = [["female"]]
+mutationsM = [["male"]]
 while (again):
-    mutationsF = [["female"]]
-    mutationsM = [["male"]]
-    for i in range(1, 3):
-        top = Tk()
-        windowSettings(top)
-        femaleL = Label(top, text="CHOOSE FEMALE MUTATIONS")
-        femaleOffspringL = Label(top, text="CHOOSE FEMALE MUTATIONS OR USE OFFSPRING")
-        maleL = Label(top, text="CHOOSE MALE MUTATIONS")
-        maleOffspringL = Label(top, text="CHOOSE MALE MUTATIONS OR USE OFFSPRING")
-        if(i == 1):
-            if(offspringCanUse):
-                femaleOffspringL.pack()
-            else:
-                femaleL.pack()
-        else:
-            if(offspringCanUse):
-                maleOffspringL.pack()
-            else:
-                maleL.pack()
-        var1 = StringVar(top)
-        var1.set("wild type")
-        var2 = StringVar(top)
-        var2.set("wild type")
-        var3 = StringVar(top)
-        var3.set("wild type")
-        var4 = StringVar(top)
-        var4.set("wild type")
-        var5 = StringVar(top)
-        var5.set("wild type")
-        var6 = StringVar(top)
-        var6.set("wild type")
-        var7 = StringVar(top)
-        var7.set("wild type")
-        var8 = StringVar(top)
-        var8.set("wild type")
-
-        def useOffspringCallback():
-            #gotta make sure offspring aren't dead
-            global mutationsF
-            global mutationsM
-            global generation
-            if (i == 1):
-                for j in range(0, 1000): #Must find a female
-                    if(offspring[j][0] == ["female"]):
-                        mutationsF = offspring[j]
-                        generation += 1
-                        break
-                    else:
-                        continue
-            else:
-                for j in range(0, 1000): #Must find a male
-                    if(offspring[j][0] == ["male"]):
-                        mutationsM = offspring[j]
-                        generation += 1
-                        break
-                    else:
-                        continue
-            top.destroy()
-
-        eyecolors = OptionMenu(top, var1, "wild type", "purple eyes", "brown eyes", "white eyes")
-        eyecolorsL = Label(top, text="Eye Colors:")
-        eyeshapes = OptionMenu(top, var2, "wild type", "lobe eyes", "eyeless")
-        eyeshapesL = Label(top, text="Eye Shapes:")
-        bristles = OptionMenu(top, var3, "wild type", "shaven bristles", "stubble bristles")
-        bristlesL = Label(top, text="Bristles:")
-        wingshapes = OptionMenu(top, var4, "wild type", "apterous wings", "curly wings")
-        wingshapesL = Label(top, text="Wing Shapes:")
-        wingsize = OptionMenu(top, var5, "wild type", "vestigial wings")
-        wingsizeL = Label(top, text="Wing Sizes:")
-        bodycolor = OptionMenu(top, var6, "wild type", "ebony body", "black body", "tan body")
-        bodycolorL = Label(top, text="Body Colors:")
-        antennaeshapes = OptionMenu(top, var7, "wild type", "aristapedia")
-        antennaeshapesL = Label(top, text="Antennae Shapes:")
-        wingveins = OptionMenu(top, var8, "wild type", "incomplete wing vein")
-        wingveinsL = Label(top, text="Wing Veins: ")
-        offspringButton = Button(top, text="USE OFFSPRING", command=useOffspringCallback)
-        characteristics = [eyecolors, eyeshapes, bristles, wingshapes, wingsize, bodycolor, antennaeshapes, wingveins]
-        labels = [eyecolorsL, eyeshapesL, bristlesL, wingshapesL, wingsizeL, bodycolorL, antennaeshapesL, wingveinsL]
-        v = [var1, var2, var3, var4, var5, var6, var7, var8]
-        for c in characteristics:
-            labels[characteristics.index(c)].pack()
-            c.pack()
-
-        if(offspringCanUse):
-            offspringButton.pack()
-
-        def backCallBack():
-            global mutationsF
-            global mutationsM
-            for var in v:
-                trait = var.get()
-                if(i == 1):
-                    mutationsF.append([trait, trait]) #appends both alleles
-                else:
-                    mutationsM.append([trait, trait]) #appends both alleles
-            top.destroy()
-        back = Button(top, text="CONTINUE", command=backCallBack)
-        back.pack()
-        top.mainloop()
-
+    if(firstTime):
+        mutationsF = [["female"]]
+        mutationsM = [["male"]]
+        for i in range(1, 3):
+            createFly(i)
     offspring = []
-    #phenotype = []
     offspringphenotypelist = []
+    #print("PREMATING: ", mutationsM, mutationsF)
     for i in range(0, 1000): #does mating 1000 times
         female = Fly(True, copy.deepcopy(mutationsF), generation)
         male = Fly(False, copy.deepcopy(mutationsM), generation)
         [offspringpart,  offspringphenotypelistpart] = mate(female, male)
         offspring.append(offspringpart)
         offspringphenotypelist.append(offspringphenotypelistpart)
+    firstTime = False
+    mutationsF = [["female"]]
+    mutationsM = [["male"]]
 
     from collections import Counter  #this counts how many times each PHENOTYPE appears
     data = offspringphenotypelist
-    yes = Counter(str(e) for e in data)
+    yes = Counter(", ".join(e) for e in data)
+    offspringlist = []
+    for k,v in yes.items():
+        offspringlist.append([k.split(", "), v])
     offspringphenotypelistUse = ("\n".join("{}: {}".format(k, v) for k, v in yes.items())) #makes dictionary output look pretty
 
 
-    top = Tk()
-    windowSettings(top)
-    def anotherCrossCommand():
-        global offspringCanUse
-        offspringCanUse = True
-        top.destroy()
+    bottom = Tk()
+    windowSettings(bottom)
     def newCrossCommand():
-        global offspringCanUse
-        offspringCanUse = False
-        top.destroy()
+        global firstTime
+        firstTime = True
+        bottom.destroy()
     def quitCallBack():
         global again
         again = False
-        top.destroy()
+        bottom.destroy()
 
-    newfly = Label(top, text = "Offspring")
-    offspringgenotypelabel = Label(top, text = offspringphenotypelistUse)
-    anotherCross = Button(top, text = "Perform another cross", command = anotherCrossCommand) #can use offspring
-    newCross = Button(top, text = "Perform a new cross", command = newCrossCommand)
-    quit = Button(top, text = "QUIT", command = quitCallBack)
+    newfly = Label(bottom, text = "Offspring")
+    newCross = Button(bottom, text = "Perform a new cross", command = newCrossCommand)
+    quit = Button(bottom, text = "QUIT", command = quitCallBack)
     newfly.pack()
-    offspringgenotypelabel.pack()
-    anotherCross.pack(side=LEFT)
-    newCross.pack(side=RIGHT)
+
+    #FOLLOWING CODE DEALS WITH DISPLAYING OFFSPRING WITH BUTTONS TO SELECT THEM
+    def useOffspringCallback(index):
+        global mutationsF
+        global mutationsM
+        global generation
+        global chooseMutations
+        if(offspringlist[index][0][0] == "female"):
+            mutationsF = offspring[offspringphenotypelist.index(offspringlist[index][0])]
+            #print(mutationsF)
+        elif(offspringlist[index][0][0] == "male"):
+            mutationsM = offspring[offspringphenotypelist.index(offspringlist[index][0])]
+            #print(mutationsM)
+        if(len(mutationsM) > 1 and len(mutationsF) > 1):
+            chooseMutations = False
+            #print("GOT MUTATIONS: ",mutationsM, mutationsF)
+            bottom.destroy()
+
+    def obutton1callback():
+        useOffspringCallback(0)
+    def obutton2callback():
+        useOffspringCallback(1)
+    def obutton3callback():
+        useOffspringCallback(2)
+    def obutton4callback():
+        useOffspringCallback(3)
+    def obutton5callback():
+        useOffspringCallback(4)
+    def obutton6callback():
+        useOffspringCallback(5)
+    def obutton7callback():
+        useOffspringCallback(6)
+    def obutton8callback():
+        useOffspringCallback(7)
+    def obutton9callback():
+        useOffspringCallback(8)
+
+    olabel1 = Label(bottom, text = offspringlist[0])
+    olabel2 = Label(bottom, text=offspringlist[0])
+    olabel3 = Label(bottom, text=offspringlist[0])
+    olabel4 = Label(bottom, text=offspringlist[0])
+    olabel5 = Label(bottom, text=offspringlist[0])
+    olabel6 = Label(bottom, text=offspringlist[0])
+    olabel7 = Label(bottom, text=offspringlist[0])
+    olabel8 = Label(bottom, text=offspringlist[0])
+    olabel9 = Label(bottom, text=offspringlist[0])
+    obutton1 = Button()
+    obutton2 = Button()
+    obutton3 = Button()
+    obutton4 = Button()
+    obutton5 = Button()
+    obutton6 = Button()
+    obutton7 = Button()
+    obutton8 = Button()
+    obutton9 = Button()
+    offspringlabels = [olabel1, olabel2, olabel3, olabel4, olabel5, olabel6, olabel7, olabel8, olabel9]
+    offspringbuttons = [obutton1, obutton2, obutton3, obutton4, obutton5, obutton6, obutton7, obutton8, obutton9]
+    callbacks = [obutton1callback, obutton2callback, obutton3callback, obutton4callback, obutton5callback, obutton6callback, obutton7callback, obutton8callback, obutton9callback]
+    for i in range(0, len(offspringlist)):
+        texts = ", ".join(offspringlist[i][0]), offspringlist[i][1]
+        offspringlabels[i] = Label(bottom, text=texts)
+        offspringbuttons[i] = Button(bottom, text="Use to mate", command=callbacks[i])
+        offspringlabels[i].pack()
+        offspringbuttons[i].pack()
+    def designFemale():
+        createFly(1)
+
+    def designMale():
+        createFly(2)
+
+    def mateBcallback():
+        bottom.destroy()
+
+    designFemaleB = Button(bottom, text="Design Female", command=designFemale)
+    designMaleB = Button(bottom, text="Design Male", command=designMale)
+    mateB = Button(bottom, text="MATE", command=mateBcallback)
+    designFemaleB.pack()
+    designMaleB.pack()
+
+    newCross.pack(side=LEFT)
+    mateB.pack(side=RIGHT)
     quit.pack(side=BOTTOM)
-    top.mainloop()
+    bottom.mainloop()
