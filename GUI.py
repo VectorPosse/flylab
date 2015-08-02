@@ -3,11 +3,11 @@ from tkinter import *
 from flyclass import Fly
 import copy
 
-def windowSettings(windowName):
+def windowSettings(windowName, height, width):
     windowName.minsize(500, 500)
     windowName.wm_title("Fly Mater")
-    h = 600
-    w = 700
+    h = height
+    w = width
     ws = windowName.winfo_screenwidth()
     hs = windowName.winfo_screenheight()
     x = (ws/2) - (h/2)
@@ -84,7 +84,7 @@ def createFly(i):
     global mutationsM
     global top
     top = Tk()
-    windowSettings(top)
+    windowSettings(top, 600, 700)
     femaleL = Label(top, text="CHOOSE FEMALE MUTATIONS")
     maleL = Label(top, text="CHOOSE MALE MUTATIONS")
     if(i == 1):
@@ -146,8 +146,8 @@ def createFly(i):
     top.mainloop()
 
 again = True
-firstTime = True
-offspringlist = []
+firstTime = True #if it is the first time, you select male/female mutations, otherwise you can use offspring or design a new male or female
+offspringlist = [] #used to display offspring phenotypes with count
 mutationsF = [["female"]]
 mutationsM = [["male"]]
 while (again):
@@ -173,12 +173,11 @@ while (again):
     yes = Counter(", ".join(e) for e in data)
     offspringlist = []
     for k,v in yes.items():
-        offspringlist.append([k.split(", "), v])
-    offspringphenotypelistUse = ("\n".join("{}: {}".format(k, v) for k, v in yes.items())) #makes dictionary output look pretty
+        offspringlist.append([k.split(", "), v]) #takes string/dictionary from Counter and turns it back into list
 
 
     bottom = Tk()
-    windowSettings(bottom)
+    windowSettings(bottom, 600, 700)
     def newCrossCommand():
         global firstTime
         firstTime = True
@@ -244,7 +243,7 @@ while (again):
     offspringlabels = [olabel1, olabel2, olabel3, olabel4, olabel5, olabel6, olabel7, olabel8, olabel9]
     offspringbuttons = [obutton1, obutton2, obutton3, obutton4, obutton5, obutton6, obutton7, obutton8, obutton9]
     callbacks = [obutton1callback, obutton2callback, obutton3callback, obutton4callback, obutton5callback, obutton6callback, obutton7callback, obutton8callback, obutton9callback]
-    for i in range(0, len(offspringlist)):
+    for i in range(0, len(offspringlist)): #if more than 9 offspring are produced there will be an error
         texts = ", ".join(offspringlist[i][0]), offspringlist[i][1]
         offspringlabels[i] = Label(bottom, text=texts)
         offspringbuttons[i] = Button(bottom, text="Use to mate", command=callbacks[i])
@@ -267,15 +266,40 @@ while (again):
             errorM.pack()
         else:
             print("something happened")
+
+    def ignoreSexCallBack():
+        middle = Tk()
+        windowSettings(middle, 600, 700)
+        data = []
+        for i in range(0, len(offspringphenotypelist)):
+            data.append(offspringphenotypelist[i][1:])
+        yes = Counter(", ".join(e) for e in data)
+        offspringlist = []
+        for k,v in yes.items():
+            offspringlist.append([k.split(", "), v])
+        #offspringprint = ("\n".join(k for k in offspringlist))
+        offspringprint = ("\n".join("{}: {}".format(k, v) for k, v in yes.items()))
+
+        def closeCommand():
+            middle.destroy()
+
+        displayOffspringL = Label(middle, text=offspringprint)
+        close = Button(middle, text="CLOSE", command=closeCommand, height=5)
+        displayOffspringL.pack()
+        close.pack()
+        middle.mainloop()
+
     errorboth = Label(bottom, text="Please choose two flies to mate", fg="red")
     errorF = Label(bottom, text="Please design female fly", fg="red")
     errorM = Label(bottom, text="Please design male fly", fg="red")
     designFemaleB = Button(bottom, text="Design Female", command=designFemale)
     designMaleB = Button(bottom, text="Design Male", command=designMale)
     mateB = Button(bottom, text="MATE", command=mateBcallback)
+    ignoreSex = Button(bottom, text="Ignore Sex", command=ignoreSexCallBack)
     designFemaleB.pack()
     designMaleB.pack()
 
+    ignoreSex.pack()
     newCross.pack(side=LEFT)
     mateB.pack(side=RIGHT)
     quit.pack(side=BOTTOM)
