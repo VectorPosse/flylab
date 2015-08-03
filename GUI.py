@@ -19,7 +19,7 @@ def mate(female, male):
     [mAlleles, mMutations, msexallele] = male.chooseAlleles()
     epistatic = "" #will be filled if a mutation is epistatic to another
     offspring = [] #always ordered female,male so you can do the linked genes and know parent phenotypes
-    offspringphenotypelist = [] #the phenotypes that will actually be displayed
+    offspringphenotypelist = [] #the phenotypes that will actually be displayed; only mutations, not wild type
     if(fsexallele == msexallele == "x"): #female
         offspring.append(["female"])
         offspringphenotypelist.append("female")
@@ -80,7 +80,7 @@ def mate(female, male):
         offspringphenotypelist.append("wild type") #otherwise will just print male or female
     return offspring, offspringphenotypelist
 
-def createFly(i):
+def createFly(i): #1 = female, 2 = male
     global mutationsF
     global mutationsM
     global top
@@ -245,7 +245,7 @@ while (again):
     offspringbuttons = [obutton1, obutton2, obutton3, obutton4, obutton5, obutton6, obutton7, obutton8, obutton9]
     callbacks = [obutton1callback, obutton2callback, obutton3callback, obutton4callback, obutton5callback, obutton6callback, obutton7callback, obutton8callback, obutton9callback]
     for i in range(0, len(offspringlist)): #if more than 9 offspring are produced there will be an error
-        texts = ", ".join(offspringlist[i][0]), offspringlist[i][1]
+        texts = ", ".join(offspringlist[i][0]) + ": " + str(offspringlist[i][1])
         offspringlabels[i] = Label(bottom, text=texts)
         offspringlabels[i].pack()
         if(offspringlist[i][0][0] != "dead"): #makes it so you cannot select dead fly to mate
