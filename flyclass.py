@@ -192,7 +192,7 @@ class Fly:
                         self.alleles[threeAllelespot2] = chromosomechoice[2]
         self.mutationinfos = [] #going to refill self.mutationinfos with info just for the alleles so mating is easier
         for mut in self.alleles:
-            if (mut == "wild type"):
+            if (mut == "wild type" or mut == ""):
                 self.mutationinfos.append([""])
             else:
                 cfile.seek(0)

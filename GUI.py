@@ -69,6 +69,7 @@ def mate(female, male):
                 if(mAlleles[i] == epistatic):
                     offspring.append(["wild type", mAlleles[i]]) #epistatic so nothing will show up
                 elif(mAlleles[i] == ""): #sex linked, female is wild type and male is mutant but chose Y chromosome
+                    print("line 75")
                     offspring.append(["wild type", ""])
                 elif(mMutations[i][3] == "no"):
                     offspring.append(["wild type", mAlleles[i]])
@@ -246,9 +247,10 @@ while (again):
     for i in range(0, len(offspringlist)): #if more than 9 offspring are produced there will be an error
         texts = ", ".join(offspringlist[i][0]), offspringlist[i][1]
         offspringlabels[i] = Label(bottom, text=texts)
-        offspringbuttons[i] = Button(bottom, text="Use to mate", command=callbacks[i])
         offspringlabels[i].pack()
-        offspringbuttons[i].pack()
+        if(offspringlist[i][0][0] != "dead"): #makes it so you cannot select dead fly to mate
+            offspringbuttons[i] = Button(bottom, text="Use to mate", command=callbacks[i])
+            offspringbuttons[i].pack()
     def designFemale():
         createFly(1)
 
@@ -272,7 +274,10 @@ while (again):
         windowSettings(middle, 600, 700)
         data = []
         for i in range(0, len(offspringphenotypelist)):
-            data.append(offspringphenotypelist[i][1:])
+            if(offspringphenotypelist[i][0] != "dead"):
+                data.append(offspringphenotypelist[i][1:]) #deletes the sex from all the offspring
+            else: #if the offspring are dead then you don't need to delete the sex - just show dead
+                data.append(offspringphenotypelist[i])
         yes = Counter(", ".join(e) for e in data)
         offspringlist = []
         for k,v in yes.items():
