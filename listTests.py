@@ -1,4 +1,5 @@
 __author__ = 'Kira'
+from tkinter import *
 [x,y,z] = [1,2,3]
 #print (x)
 import pprint
@@ -15,7 +16,7 @@ l2 = ["1"]
 me = [1,2,3]
 me.insert(0,1)
 print(me)
-print(me[5])
+#print(me[5])
 
 for i in range(0,5):
     if(i == 2):
@@ -30,3 +31,4 @@ if(meme == 2):
     print(2)
 else:
     print(meme)
+

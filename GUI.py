@@ -255,7 +255,7 @@ while (again):
     def designMale():
         createFly(2)
 
-    def mateBcallback():
+    def mateBcallback(): #mates the flies unless mutations haven't been selected for both of them in which case there is an error message
         if(len(mutationsF) > 1 and len(mutationsM) > 1):
             bottom.destroy()
         elif(len(mutationsF) == 1 and len(mutationsM) == 1):
@@ -267,7 +267,7 @@ while (again):
         else:
             print("something happened")
 
-    def ignoreSexCallBack():
+    def ignoreSexCallBack(): #creates a new window where offspring are displayed without regard to sex
         middle = Tk()
         windowSettings(middle, 600, 700)
         data = []
@@ -277,14 +277,13 @@ while (again):
         offspringlist = []
         for k,v in yes.items():
             offspringlist.append([k.split(", "), v])
-        #offspringprint = ("\n".join(k for k in offspringlist))
         offspringprint = ("\n".join("{}: {}".format(k, v) for k, v in yes.items()))
 
         def closeCommand():
             middle.destroy()
 
         displayOffspringL = Label(middle, text=offspringprint)
-        close = Button(middle, text="CLOSE", command=closeCommand, height=5)
+        close = Button(middle, text="CLOSE", command=closeCommand, height=3)
         displayOffspringL.pack()
         close.pack()
         middle.mainloop()
