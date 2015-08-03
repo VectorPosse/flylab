@@ -4,7 +4,6 @@ from flyclass import Fly
 import copy
 
 def windowSettings(windowName, height, width):
-    windowName.minsize(500, 500)
     windowName.wm_title("Fly Mater")
     h = height
     w = width
@@ -271,7 +270,7 @@ while (again):
 
     def ignoreSexCallBack(): #creates a new window where offspring are displayed without regard to sex
         middle = Tk()
-        windowSettings(middle, 600, 700)
+        windowSettings(middle, 300, 300)
         data = []
         for i in range(0, len(offspringphenotypelist)):
             if(offspringphenotypelist[i][0] != "dead"):
