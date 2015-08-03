@@ -128,7 +128,9 @@ def createFly(i): #1 = female, 2 = male
     labels = [eyecolorsL, eyeshapesL, bristlesL, wingshapesL, wingsizeL, bodycolorL, antennaeshapesL, wingveinsL]
     v = [var1, var2, var3, var4, var5, var6, var7, var8]
     for c in characteristics:
+        #labels[characteristics.index(c)].grid(row = characteristics.index(c), column = 0)
         labels[characteristics.index(c)].pack()
+        #c.grid(row = characteristics.index(c), column = 1)
         c.pack()
 
     def backCallBack(): #command for continue button
@@ -203,53 +205,15 @@ while (again):
         if(len(mutationsM) > 1 and len(mutationsF) > 1):
             bottom.destroy()
 
-    def obutton1callback():
-        useOffspringCallback(0)
-    def obutton2callback():
-        useOffspringCallback(1)
-    def obutton3callback():
-        useOffspringCallback(2)
-    def obutton4callback():
-        useOffspringCallback(3)
-    def obutton5callback():
-        useOffspringCallback(4)
-    def obutton6callback():
-        useOffspringCallback(5)
-    def obutton7callback():
-        useOffspringCallback(6)
-    def obutton8callback():
-        useOffspringCallback(7)
-    def obutton9callback():
-        useOffspringCallback(8)
+    def obuttoncallback(index):
+        useOffspringCallback(index)
 
-    olabel1 = Label(bottom, text = offspringlist[0])
-    olabel2 = Label(bottom, text=offspringlist[0])
-    olabel3 = Label(bottom, text=offspringlist[0])
-    olabel4 = Label(bottom, text=offspringlist[0])
-    olabel5 = Label(bottom, text=offspringlist[0])
-    olabel6 = Label(bottom, text=offspringlist[0])
-    olabel7 = Label(bottom, text=offspringlist[0])
-    olabel8 = Label(bottom, text=offspringlist[0])
-    olabel9 = Label(bottom, text=offspringlist[0])
-    obutton1 = Button()
-    obutton2 = Button()
-    obutton3 = Button()
-    obutton4 = Button()
-    obutton5 = Button()
-    obutton6 = Button()
-    obutton7 = Button()
-    obutton8 = Button()
-    obutton9 = Button()
-    offspringlabels = [olabel1, olabel2, olabel3, olabel4, olabel5, olabel6, olabel7, olabel8, olabel9]
-    offspringbuttons = [obutton1, obutton2, obutton3, obutton4, obutton5, obutton6, obutton7, obutton8, obutton9]
-    callbacks = [obutton1callback, obutton2callback, obutton3callback, obutton4callback, obutton5callback, obutton6callback, obutton7callback, obutton8callback, obutton9callback]
-    for i in range(0, len(offspringlist)): #if more than 9 offspring are produced there will be an error
+    for i in range(0, len(offspringlist)): #just makes generic label and button, but the button command knows which button it is
         texts = ", ".join(offspringlist[i][0]) + ": " + str(offspringlist[i][1])
-        offspringlabels[i] = Label(bottom, text=texts)
-        offspringlabels[i].pack()
+        Label(bottom, text=texts).pack()
         if(offspringlist[i][0][0] != "dead"): #makes it so you cannot select dead fly to mate
-            offspringbuttons[i] = Button(bottom, text="Use to mate", command=callbacks[i])
-            offspringbuttons[i].pack()
+            Button(bottom, text="Use to mate", command=lambda x=i: obuttoncallback(x)).pack()
+
     def designFemale():
         createFly(1)
 
