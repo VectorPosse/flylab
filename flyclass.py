@@ -13,6 +13,7 @@ class Fly:
         self.listofchromosomes = [[], [], [], []] #chromosome 1 is the X chromosome
         self.sex = [] #[x,x] if female, [x,y] if male
         self.sexallele = "" #either x or y; randomly chosen from self.sex
+        self.chromosomeOverload = False #will become true if there are 4 or more mutations on a chromosome
 
     def getAlleleLocation(self, chromosome, chromosomeindex): #for linked genes, finds location on chromosome
         cfile = open("chromosome_layout.csv")
@@ -190,6 +191,8 @@ class Fly:
                         self.alleles[threeAllelespot0] = chromosomechoice[0]
                         self.alleles[threeAllelespot1] = chromosomechoice[1]
                         self.alleles[threeAllelespot2] = chromosomechoice[2]
+            if(len(chromosome) > 3): #no crossing over for four linked genes (or more) - complicated and not necessary
+                self.chromosomeOverload = True
         self.mutationinfos = [] #going to refill self.mutationinfos with info just for the alleles so mating is easier
         for mut in self.alleles:
             if (mut == "wild type" or mut == ""):
@@ -200,4 +203,4 @@ class Fly:
                     if (row[1] == mut):
                         self.mutationinfos.append(row)
                         break
-        return self.alleles, self.mutationinfos, self.sexallele
+        return self.alleles, self.mutationinfos, self.sexallele, self.chromosomeOverload

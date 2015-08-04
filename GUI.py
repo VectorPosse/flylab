@@ -1,6 +1,7 @@
 __author__ = 'Kira'
 from tkinter import *
 from flyclass import Fly
+#from scipy import stats
 import copy
 
 def windowSettings(windowName, height, width):
@@ -9,13 +10,13 @@ def windowSettings(windowName, height, width):
     w = width
     ws = windowName.winfo_screenwidth()
     hs = windowName.winfo_screenheight()
-    x = (ws/2) - (h/2)
+    x = (ws/2) - (w/2)
     y = (hs/2) - (h/2)
     windowName.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
 def mate(female, male):
-    [fAlleles, fMutations, fsexallele] = female.chooseAlleles()
-    [mAlleles, mMutations, msexallele] = male.chooseAlleles()
+    [fAlleles, fMutations, fsexallele, fchromosomeOverload] = female.chooseAlleles()
+    [mAlleles, mMutations, msexallele, mchromosomeOverload] = male.chooseAlleles()
     epistatic = "" #will be filled if a mutation is epistatic to another
     offspring = [] #always ordered female,male so you can do the linked genes and know parent phenotypes
     offspringphenotypelist = [] #the phenotypes that will actually be displayed; only mutations, not wild type
@@ -68,7 +69,6 @@ def mate(female, male):
                 if(mAlleles[i] == epistatic):
                     offspring.append(["wild type", mAlleles[i]]) #epistatic so nothing will show up
                 elif(mAlleles[i] == ""): #sex linked, female is wild type and male is mutant but chose Y chromosome
-                    print("line 75")
                     offspring.append(["wild type", ""])
                 elif(mMutations[i][3] == "no"):
                     offspring.append(["wild type", mAlleles[i]])
@@ -77,7 +77,7 @@ def mate(female, male):
                     offspringphenotypelist.append(mAlleles[i])
     if(len(offspringphenotypelist) == 1 and offspringphenotypelist[0] != "dead"):
         offspringphenotypelist.append("wild type") #otherwise will just print male or female
-    return offspring, offspringphenotypelist
+    return offspring, offspringphenotypelist, fchromosomeOverload, mchromosomeOverload
 
 def createFly(i): #1 = female, 2 = male
     global mutationsF
@@ -160,10 +160,13 @@ while (again):
             createFly(i)
     offspring = []
     offspringphenotypelist = []
+    chromosomeOverload = []
     for i in range(0, 1000): #does mating 1000 times
         female = Fly(True, copy.deepcopy(mutationsF))
         male = Fly(False, copy.deepcopy(mutationsM))
-        [offspringpart,  offspringphenotypelistpart] = mate(female, male)
+        [offspringpart,  offspringphenotypelistpart, moverload, foverload] = mate(female, male)
+        chromosomeOverload.append(moverload)
+        chromosomeOverload.append(foverload)
         offspring.append(offspringpart)
         offspringphenotypelist.append(offspringphenotypelistpart)
     firstTime = False
@@ -179,7 +182,10 @@ while (again):
 
 
     bottom = Tk()
-    windowSettings(bottom, 600, 700)
+    windowSettings(bottom, 600, 1200)
+    for i in range(0,4):
+        bottom.columnconfigure(i, minsize=300)
+    #bottom.columnconfigure(2, weight = 3)
     def newCrossCommand():
         global firstTime
         firstTime = True
@@ -189,10 +195,11 @@ while (again):
         again = False
         bottom.destroy()
 
+
     newfly = Label(bottom, text = "Offspring")
     newCross = Button(bottom, text = "Perform a new cross", command = newCrossCommand)
     quit = Button(bottom, text = "QUIT", command = quitCallBack)
-    newfly.pack()
+    newfly.grid(row = 0, column = 1)
 
     #FOLLOWING CODE DEALS WITH DISPLAYING OFFSPRING WITH BUTTONS TO SELECT THEM
     def useOffspringCallback(index):
@@ -207,12 +214,13 @@ while (again):
 
     def obuttoncallback(index):
         useOffspringCallback(index)
-
+    rownum = 1
     for i in range(0, len(offspringlist)): #just makes generic label and button, but the button command knows which button it is
         texts = ", ".join(offspringlist[i][0]) + ": " + str(offspringlist[i][1])
-        Label(bottom, text=texts).pack()
+        Label(bottom, text=texts).grid(row = rownum, column = 1, sticky=E)
         if(offspringlist[i][0][0] != "dead"): #makes it so you cannot select dead fly to mate
-            Button(bottom, text="Use to mate", command=lambda x=i: obuttoncallback(x)).pack()
+            Button(bottom, text="Use to mate", command=lambda x=i: obuttoncallback(x)).grid(row = rownum, column = 2, sticky=W)
+        rownum += 1
 
     def designFemale():
         createFly(1)
@@ -224,11 +232,11 @@ while (again):
         if(len(mutationsF) > 1 and len(mutationsM) > 1):
             bottom.destroy()
         elif(len(mutationsF) == 1 and len(mutationsM) == 1):
-            errorboth.pack()
+            errorboth.grid()
         elif(len(mutationsF) == 1):
-            errorF.pack()
+            errorF.grid()
         elif(len(mutationsM) == 1):
-            errorM.pack()
+            errorM.grid()
         else:
             print("something happened")
 
@@ -256,6 +264,33 @@ while (again):
         close.pack()
         middle.mainloop()
 
+    def chisquareDo(): #actually performs chi-square test
+        global entries
+        expected = []
+        observed = []
+        for i in range(0, len(offspringlist)):
+            if(entries[i].get() == ""):
+                Label(bottom, text="Please finish filling in expected values", fg="red").grid()
+                break
+            else:
+                expected.append(int(entries[i].get()))
+                observed.append(offspringlist[i][1])
+            if(i == len(offspringlist) - 1):
+                print(expected, observed)
+
+
+    def chisquareShowInput(): #displays entry boxes for expected values
+        global rownum
+        global entries
+        entries = []
+        Label(bottom, text="Enter Expected Values:").grid(row = 0, column = 3)
+        for i in range(0, len(offspringlist)):
+            entries.append(Entry(bottom))
+            entries[i].grid(row=i+1, column=3)
+        chisquare.configure(text="Calculate", command=chisquareDo)
+        chisquare.grid(row=rownum, column=3, sticky=NSEW)
+
+
     errorboth = Label(bottom, text="Please choose two flies to mate", fg="red")
     errorF = Label(bottom, text="Please design female fly", fg="red")
     errorM = Label(bottom, text="Please design male fly", fg="red")
@@ -263,11 +298,21 @@ while (again):
     designMaleB = Button(bottom, text="Design Male", command=designMale)
     mateB = Button(bottom, text="MATE", command=mateBcallback)
     ignoreSex = Button(bottom, text="Ignore Sex", command=ignoreSexCallBack)
-    designFemaleB.pack()
-    designMaleB.pack()
+    chisquare = Button(bottom, text="Perform Chi-Square Test", command=chisquareShowInput)
+    designFemaleB.grid(row = rownum+1, column = 0, pady = (5,0))
+    rownum += 1
+    designMaleB.grid(row = rownum+1, column = 0, pady=(0,5))
+    rownum += 2
 
-    ignoreSex.pack()
-    newCross.pack(side=LEFT)
-    mateB.pack(side=RIGHT)
-    quit.pack(side=BOTTOM)
+    bottom.columnconfigure(rownum, weight = 2)
+    ignoreSex.grid(row = 0, column = 0, sticky=NW)
+    newCross.grid(row = rownum, column = 0, sticky=NSEW)
+    mateB.grid(row = rownum, column = 1, sticky=NSEW)
+    quit.grid(row = rownum, column = 2, sticky=NSEW)
+    chisquare.grid(row = rownum, column = 3, sticky=NSEW)
+
+    if(True in chromosomeOverload):
+        Label(bottom, text="Error: Please only choose at most three mutations per chromosome", fg="red").grid(columnspan=4, pady=15)
+
+
     bottom.mainloop()
