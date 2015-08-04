@@ -153,6 +153,7 @@ offspringlist = [] #used to display offspring phenotypes with count
 mutationsF = [["female"]]
 mutationsM = [["male"]]
 while (again):
+    again = False
     if(firstTime):
         mutationsF = [["female"]]
         mutationsM = [["male"]]
@@ -182,12 +183,15 @@ while (again):
 
 
     bottom = Tk()
+    #bottom.configure(bg="#%02d%02d%02d" % (0,0,0))
     windowSettings(bottom, 600, 1200)
     for i in range(0,4):
         bottom.columnconfigure(i, minsize=300)
     #bottom.columnconfigure(2, weight = 3)
     def newCrossCommand():
+        global again
         global firstTime
+        again = True
         firstTime = True
         bottom.destroy()
     def quitCallBack():
@@ -209,26 +213,35 @@ while (again):
             mutationsF = offspring[offspringphenotypelist.index(offspringlist[index][0])]
         elif(offspringlist[index][0][0] == "male"):
             mutationsM = offspring[offspringphenotypelist.index(offspringlist[index][0])]
-        if(len(mutationsM) > 1 and len(mutationsF) > 1):
-            bottom.destroy()
+        #if(len(mutationsM) > 1 and len(mutationsF) > 1):
+            #bottom.destroy()
 
     def obuttoncallback(index):
+        global buttons
+        buttons[index].configure(bg = "yellow")
         useOffspringCallback(index)
+
     rownum = 1
+    buttons = []
     for i in range(0, len(offspringlist)): #just makes generic label and button, but the button command knows which button it is
         texts = ", ".join(offspringlist[i][0]) + ": " + str(offspringlist[i][1])
         Label(bottom, text=texts).grid(row = rownum, column = 1, sticky=E)
         if(offspringlist[i][0][0] != "dead"): #makes it so you cannot select dead fly to mate
-            Button(bottom, text="Use to mate", command=lambda x=i: obuttoncallback(x)).grid(row = rownum, column = 2, sticky=W)
+            buttons.append(Button(bottom, text="Use to mate", command=lambda x=i: obuttoncallback(x)))
+            buttons[-1].grid(row = rownum, column = 2, sticky=W)
         rownum += 1
 
     def designFemale():
+        designFemaleB.configure(bg="purple")
         createFly(1)
 
     def designMale():
+        designMaleB.configure(bg="purple")
         createFly(2)
 
     def mateBcallback(): #mates the flies unless mutations haven't been selected for both of them in which case there is an error message
+        global again
+        again = True
         if(len(mutationsF) > 1 and len(mutationsM) > 1):
             bottom.destroy()
         elif(len(mutationsF) == 1 and len(mutationsM) == 1):
