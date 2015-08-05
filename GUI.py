@@ -1,7 +1,6 @@
 __author__ = 'Kira'
 from tkinter import *
 from flyclass import Fly
-#from scipy import stats
 import copy
 
 def windowSettings(windowName, height, width):
@@ -183,7 +182,7 @@ while (again):
 
 
     bottom = Tk()
-    #bottom.configure(bg="#%02d%02d%02d" % (0,0,0))
+    #bottom.configure(bg="LightBlue1")
     windowSettings(bottom, 600, 1200)
     for i in range(0,4):
         bottom.columnconfigure(i, minsize=300)
@@ -203,7 +202,7 @@ while (again):
     newfly = Label(bottom, text = "Offspring")
     newCross = Button(bottom, text = "Perform a new cross", command = newCrossCommand)
     quit = Button(bottom, text = "QUIT", command = quitCallBack)
-    newfly.grid(row = 0, column = 1)
+    newfly.grid(row = 0, column = 1, columnspan = 2)
 
     #FOLLOWING CODE DEALS WITH DISPLAYING OFFSPRING WITH BUTTONS TO SELECT THEM
     def useOffspringCallback(index):
@@ -218,17 +217,24 @@ while (again):
 
     def obuttoncallback(index):
         global buttons
-        buttons[index].configure(bg = "yellow")
+        global dead
+        if(dead != 0 and index > dead):
+            buttons[index-1].configure(bg = "yellow")
+        else:
+            buttons[index].configure(bg = "yellow")
         useOffspringCallback(index)
 
     rownum = 1
     buttons = []
+    dead = 0
     for i in range(0, len(offspringlist)): #just makes generic label and button, but the button command knows which button it is
         texts = ", ".join(offspringlist[i][0]) + ": " + str(offspringlist[i][1])
         Label(bottom, text=texts).grid(row = rownum, column = 1, sticky=E)
         if(offspringlist[i][0][0] != "dead"): #makes it so you cannot select dead fly to mate
             buttons.append(Button(bottom, text="Use to mate", command=lambda x=i: obuttoncallback(x)))
             buttons[-1].grid(row = rownum, column = 2, sticky=W)
+        else:
+            dead = i
         rownum += 1
 
     def designFemale():
