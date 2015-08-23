@@ -1,7 +1,12 @@
 __author__ = 'Kira'
 from tkinter import *
 from flyclass import Fly
+#import scipy
+from scipy import stats
+# import scipy.stats
 import copy
+
+
 
 def windowSettings(windowName, height, width):
     windowName.wm_title("Fly Mater")
@@ -27,11 +32,11 @@ def mate(female, male):
         offspringphenotypelist.append("male")
     else:
         print("ERROR IN THE SEX DETERMINATION")
-    for i in range(0, 8): #check to see if there are any mutations that have another mutation that is epistatic to them
+    for i in range(0, len(fAlleles)): #check to see if there are any mutations that have another mutation that is epistatic to them
         if(fAlleles[i] == mAlleles[i] and fAlleles[i] != "wild type"):
             if(fMutations[i][7] != "" and fMutations[i][6] == "no"):
                 epistatic = fMutations[i][7]
-    for i in range(0, 8):
+    for i in range(0, len(fAlleles)):
         if (fAlleles[i] == "wild type" and mAlleles[i] == "wild type"):
             offspring.append(["wild type", "wild type"])
         if(fAlleles[i] != "wild type" and mAlleles[i] != "wild type"):
@@ -51,7 +56,7 @@ def mate(female, male):
                 offspringphenotypelist.append(fAlleles[i])
             else:
                 print("FEMALE ALLELE: ", fAlleles[i], " MALE ALLELE: ", mAlleles[i])
-                print("NOPE") #This cannot happen in flylab
+                print("NOPE") #This should not happen
         elif (fAlleles[i] != "wild type" or mAlleles[i] != "wild type"):
             if(fAlleles[i] != "wild type"):
                 if(fAlleles[i] == epistatic):
@@ -78,7 +83,7 @@ def mate(female, male):
         offspringphenotypelist.append("wild type") #otherwise will just print male or female
     return offspring, offspringphenotypelist, fchromosomeOverload, mchromosomeOverload
 
-def createFly(i): #1 = female, 2 = male
+def createFly(sex): #1 = female, 2 = male
     global mutationsF
     global mutationsM
     global top
@@ -86,61 +91,67 @@ def createFly(i): #1 = female, 2 = male
     windowSettings(top, 600, 700)
     femaleL = Label(top, text="CHOOSE FEMALE MUTATIONS")
     maleL = Label(top, text="CHOOSE MALE MUTATIONS")
-    if(i == 1):
+    if(sex == 1):
         femaleL.pack()
     else:
         maleL.pack()
-    var1 = StringVar(top)
-    var1.set("wild type")
-    var2 = StringVar(top)
-    var2.set("wild type")
-    var3 = StringVar(top)
-    var3.set("wild type")
-    var4 = StringVar(top)
-    var4.set("wild type")
-    var5 = StringVar(top)
-    var5.set("wild type")
-    var6 = StringVar(top)
-    var6.set("wild type")
-    var7 = StringVar(top)
-    var7.set("wild type")
-    var8 = StringVar(top)
-    var8.set("wild type")
 
-    eyecolors = OptionMenu(top, var1, "wild type", "purple eyes", "brown eyes", "white eyes")
+    varss = [] #creates list of unnamed variables for option menus below
+    for i in range(0, 8):
+        varss.append(StringVar(top))
+        varss[i].set("wild type")
+
+    eyecolors = ("wild type", "purple eyes", "brown eyes", "white eyes")
     eyecolorsL = Label(top, text="Eye Colors:")
-    eyeshapes = OptionMenu(top, var2, "wild type", "lobe eyes", "eyeless")
+    eyeshapes = ("wild type", "lobe eyes", "eyeless")
     eyeshapesL = Label(top, text="Eye Shapes:")
-    bristles = OptionMenu(top, var3, "wild type", "shaven bristles", "stubble bristles")
+    bristles = ("wild type", "shaven bristles", "stubble bristles")
     bristlesL = Label(top, text="Bristles:")
-    wingshapes = OptionMenu(top, var4, "wild type", "apterous wings", "curly wings")
+    wingshapes = ("wild type", "apterous wings", "curly wings")
     wingshapesL = Label(top, text="Wing Shapes:")
-    wingsize = OptionMenu(top, var5, "wild type", "vestigial wings")
+    wingsize = ("wild type", "vestigial wings")
     wingsizeL = Label(top, text="Wing Sizes:")
-    bodycolor = OptionMenu(top, var6, "wild type", "ebony body", "black body", "tan body")
+    bodycolor = ("wild type", "ebony body", "black body", "tan body")
     bodycolorL = Label(top, text="Body Colors:")
-    antennaeshapes = OptionMenu(top, var7, "wild type", "aristapedia")
+    antennaeshapes = ("wild type", "aristapedia")
     antennaeshapesL = Label(top, text="Antennae Shapes:")
-    wingveins = OptionMenu(top, var8, "wild type", "incomplete wing vein")
+    wingveins = ("wild type", "incomplete wing vein")
     wingveinsL = Label(top, text="Wing Veins: ")
     characteristics = [eyecolors, eyeshapes, bristles, wingshapes, wingsize, bodycolor, antennaeshapes, wingveins]
     labels = [eyecolorsL, eyeshapesL, bristlesL, wingshapesL, wingsizeL, bodycolorL, antennaeshapesL, wingveinsL]
-    v = [var1, var2, var3, var4, var5, var6, var7, var8]
-    for c in characteristics:
-        #labels[characteristics.index(c)].grid(row = characteristics.index(c), column = 0)
-        labels[characteristics.index(c)].pack()
-        #c.grid(row = characteristics.index(c), column = 1)
-        c.pack()
+
+    optionMenus = []
+    for i in range(0, 8):
+        labels[i].pack()
+        optionMenus.append(OptionMenu(top, varss[i], *characteristics[i])) # *characteristics[i] uses all the mutations from the tuple selected from characteristics
+        optionMenus[i].pack()
 
     def backCallBack(): #command for continue button
         global mutationsF
         global mutationsM
-        for var in v:
-            trait = var.get()
-            if(i == 1):
-                mutationsF.append([trait, trait]) #appends both alleles
+        for i in range(0, 8):
+            trait = varss[i].get()
+            traitspotinOptionMenu = characteristics[i].index(trait)
+            if(sex == 1):
+                if(trait != "wild type"):
+                    for k in range(1, traitspotinOptionMenu):
+                        mutationsF.append(["wild type", "wild type"]) #appends both alleles
+                    mutationsF.append([trait, trait])
+                    for j in range(traitspotinOptionMenu+1, len(characteristics[i])):\
+                        mutationsF.append(["wild type", "wild type"])
+                else:
+                    for k in range(1, len(characteristics[i])):
+                        mutationsF.append([trait, trait])
             else:
-                mutationsM.append([trait, trait]) #appends both alleles
+                if(trait != "wild type"):
+                    for k in range(1, traitspotinOptionMenu):
+                        mutationsM.append(["wild type", "wild type"]) #appends both alleles
+                    mutationsM.append([trait, trait])
+                    for j in range(traitspotinOptionMenu+1, len(characteristics[i])):
+                        mutationsM.append(["wild type", "wild type"])
+                else:
+                    for k in range(1, len(characteristics[i])):
+                        mutationsM.append(["wild type", "wild type"])
         top.destroy()
     back = Button(top, text="CONTINUE", command=backCallBack)
     back.pack()
@@ -261,7 +272,7 @@ while (again):
 
     def ignoreSexCallBack(): #creates a new window where offspring are displayed without regard to sex
         middle = Tk()
-        windowSettings(middle, 300, 300)
+        windowSettings(middle, 400, 400)
         data = []
         for i in range(0, len(offspringphenotypelist)):
             if(offspringphenotypelist[i][0] != "dead"):
@@ -294,8 +305,11 @@ while (again):
             else:
                 expected.append(int(entries[i].get()))
                 observed.append(offspringlist[i][1])
-            if(i == len(offspringlist) - 1):
-                print(expected, observed)
+        print(expected, observed)
+        chisquarevalue = 0
+        for i in range(0, len(expected)):
+            chisquarevalue += ((observed[i] - expected[i])**2)/expected[i]
+        print(chisquarevalue)
 
 
     def chisquareShowInput(): #displays entry boxes for expected values

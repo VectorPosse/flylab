@@ -9,7 +9,7 @@ class Fly:
         self.mutationinfos = [] #fisrt index is mutation (0 through 6), second index is allele (0 or 1), third index is specific data (0 through 5)
         #self.chromosomenum = [] #DO I NEED THIS /\/\/\ WHAT IS THIS
         self.mutpair = [] #each pair that is appended to self.mutationinfos
-        self.alleles = ["", "", "", "", "", "", "", ""] #alleles that will be returned from chooseAlleles()
+        self.alleles = [""]*(len(self.mutations)-1) #alleles that will be returned from chooseAlleles(), subtract one because you delete sex
         self.listofchromosomes = [[], [], [], []] #chromosome 1 is the X chromosome
         self.sex = [] #[x,x] if female, [x,y] if male
         self.sexallele = "" #either x or y; randomly chosen from self.sex
@@ -37,7 +37,7 @@ class Fly:
             self.sex = ["x", "y"]
         cfile = open("chromosome_layout.csv")
         thereader = csv.reader(cfile, delimiter=',', quotechar='|')
-        for i in range(0, 8):
+        for i in range(0, len(self.mutations)):
             self.mutpair = []
             lethal = False
             sexlinked = False
@@ -63,7 +63,7 @@ class Fly:
             self.mutationinfos.append(self.mutpair)
         #DETERMINE WHICH SEX ALLELE WILL BE PASSED ON
         self.sexallele = random.choice(self.sex)
-        for i in range(0, 8): #cycle through each pair of mutation infos and puts them in lists based on chromosomes
+        for i in range(0, len(self.mutations)): #cycle through each pair of mutation infos and puts them in lists based on chromosomes
             if(self.mutationinfos[i][0] == [""] and self.mutationinfos[i][1] == [""]):
                 self.alleles[i] = "wild type"
             elif(self.mutationinfos[i][0] == [""] or self.mutationinfos[i][1] == [""]): #one wild type and one mutation
