@@ -5,6 +5,7 @@ from flyclass import Fly
 from scipy import stats
 # import scipy.stats
 import copy
+import csv
 
 
 
@@ -101,21 +102,27 @@ def createFly(sex): #1 = female, 2 = male
         varss.append(StringVar(top))
         varss[i].set("wild type")
 
+    ####
+    # To add a new mutations, just add it to the correct tuple from those below
+    # and add it to the chromosome_layout.csv file, along with the information
+    # about its location on the chromosome
+    ####
     eyecolors = ("wild type", "purple eyes", "brown eyes", "white eyes")
-    eyecolorsL = Label(top, text="Eye Colors:")
     eyeshapes = ("wild type", "lobe eyes", "eyeless")
-    eyeshapesL = Label(top, text="Eye Shapes:")
     bristles = ("wild type", "shaven bristles", "stubble bristles")
-    bristlesL = Label(top, text="Bristles:")
     wingshapes = ("wild type", "apterous wings", "curly wings")
-    wingshapesL = Label(top, text="Wing Shapes:")
     wingsize = ("wild type", "vestigial wings")
-    wingsizeL = Label(top, text="Wing Sizes:")
     bodycolor = ("wild type", "ebony body", "black body", "tan body")
-    bodycolorL = Label(top, text="Body Colors:")
     antennaeshapes = ("wild type", "aristapedia")
-    antennaeshapesL = Label(top, text="Antennae Shapes:")
     wingveins = ("wild type", "incomplete wing vein")
+
+    eyecolorsL = Label(top, text="Eye Colors:")
+    eyeshapesL = Label(top, text="Eye Shapes:")
+    bristlesL = Label(top, text="Bristles:")
+    wingshapesL = Label(top, text="Wing Shapes:")
+    wingsizeL = Label(top, text="Wing Sizes:")
+    bodycolorL = Label(top, text="Body Colors:")
+    antennaeshapesL = Label(top, text="Antennae Shapes:")
     wingveinsL = Label(top, text="Wing Veins: ")
     characteristics = [eyecolors, eyeshapes, bristles, wingshapes, wingsize, bodycolor, antennaeshapes, wingveins]
     labels = [eyecolorsL, eyeshapesL, bristlesL, wingshapesL, wingsizeL, bodycolorL, antennaeshapesL, wingveinsL]
@@ -305,12 +312,40 @@ while (again):
             else:
                 expected.append(int(entries[i].get()))
                 observed.append(offspringlist[i][1])
-        print(expected, observed)
         chisquarevalue = 0
         for i in range(0, len(expected)):
             chisquarevalue += ((observed[i] - expected[i])**2)/expected[i]
         print(chisquarevalue)
-
+        chifile = open("chisquaretable.csv")
+        thereader = csv.reader(chifile, delimiter=' ', quotechar='|')
+        degreesofFreedom = len(expected) - 1
+        pvalueabove = 0
+        pvaluebelow = 0
+        chifile.seek(0)
+        for row in thereader:
+            if(str(degreesofFreedom) == row[0]):
+                chifile.seek(0)
+                for lines in thereader:
+                    if(lines[0] == 'DegreesOfFreedom'):
+                        for numbers in range(1, len(row)):
+                            if(chisquarevalue <= float(row[numbers]) and numbers != 1):
+                                pvaluebelow = float(lines[numbers])
+                                pvalueabove = float(lines[numbers-1])
+                                break
+                            elif(chisquarevalue <= float(row[numbers]) and numbers == 1):
+                                pvaluebelow = float(lines[numbers])
+                                pvalueabove = 1
+                                break
+                            elif(numbers == len(row)-1 and chisquarevalue >= float(row[numbers])):
+                                pvaluebelow = 0
+                                pvalueabove = float(lines[10])
+                                break
+        chifile.close()
+        print("The p-value is between ", pvaluebelow, " and ", pvalueabove)
+        chisquareresults = Label(bottom, text="chi square = " + str(chisquarevalue))
+        chisquareresults2 = Label(bottom, text="the p-value is between " + str(pvaluebelow) + " and " + str(pvalueabove))
+        chisquareresults.grid(column = 3)
+        chisquareresults2.grid(column = 3)
 
     def chisquareShowInput(): #displays entry boxes for expected values
         global rownum
