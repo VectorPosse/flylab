@@ -1,13 +1,29 @@
 __author__ = 'Kira'
 from tkinter import *
 from flyclass import Fly
-#import scipy
-from scipy import stats
-# import scipy.stats
 import copy
-import csv
 
-
+chisquaretable = [["DegreesOfFreedom", .995, .990, .975, .950, .900, .100, .050, .250, .010, .0050],
+                  [1, 0.000, 0.000, 0.001, 0.004, 0.016, 2.706, 3.841, 5.024, 6.635, 7.879],
+                  [2, 0.010, 0.020, 0.051, 0.103, 0.211, 4.605, 5.991, 7.378, 9.210, 10.597],
+                  [3, 0.072, 0.115, 0.216, 0.352, 0.584, 6.251, 7.815, 9.348, 11.345, 12.838],
+                  [4, 0.207, 0.297, 0.484, 0.711, 1.064, 7.779, 9.488, 11.143, 13.277, 14.860],
+                  [5, 0.412, 0.554, 0.831, 1.145, 1.610, 9.236, 11.070, 12.833, 15.086, 16.750],
+                  [6, 0.676, 0.872, 1.237, 1.635, 2.204, 10.645, 12.592, 14.449, 16.812, 18.548],
+                  [7, 0.989, 1.239, 1.690, 2.167, 2.833, 12.017, 14.067, 16.013, 18.475, 20.278],
+                  [8, 1.344, 1.646, 2.180, 2.733, 3.490, 13.362, 15.507, 17.535, 20.090, 21.955],
+                  [9, 1.735, 2.088, 2.700, 3.325, 4.168, 14.684, 16.919, 19.023, 21.666, 23.589],
+                  [10, 2.156, 2.558, 3.247, 3.940, 4.865, 15.987, 18.307, 20.483, 23.209, 25.188],
+                  [11, 2.603, 3.053, 3.816, 4.575, 5.578, 17.275, 19.675, 21.920, 24.725, 26.757],
+                  [12, 3.074, 3.571, 4.404, 5.226, 6.304, 18.549, 21.026, 23.337, 26.217, 28.300],
+                  [13, 3.565, 4.107, 5.009, 5.892, 7.042, 19.812, 22.362, 24.736, 27.688, 29.819],
+                  [14, 4.075, 4.660, 5.629, 6.571, 7.790, 21.064, 23.685, 26.119, 29.141, 31.319],
+                  [15, 4.601, 5.229, 6.262, 7.261, 8.547, 22.307, 24.996, 27.488, 30.578, 32.801],
+                  [16, 5.142, 5.812, 6.908, 7.962, 9.312, 23.542, 26.296, 28.845, 32.000, 34.267],
+                  [17, 5.697, 6.408, 7.564, 8.672, 10.085, 24.769, 27.587, 30.191, 33.409, 35.718],
+                  [18, 6.265, 7.015, 8.231, 9.390, 10.865, 25.989, 28.869, 31.526, 34.805, 37.156],
+                  [19, 6.844, 7.633, 8.907, 10.117, 11.651, 27.204, 30.144, 32.852, 36.191, 38.582],
+                  [20, 7.434, 8.260, 9.591, 10.851, 12.443, 28.412, 31.410, 34.170, 37.566, 39.997]]
 
 def windowSettings(windowName, height, width):
     windowName.wm_title("Fly Mater")
@@ -390,33 +406,22 @@ while (again):
             chisquarevalue = 0
             for i in range(0, len(expected)):
                 chisquarevalue += ((observed[i] - expected[i])**2)/expected[i]
-            print(chisquarevalue)
-            chifile = open("chisquaretable.csv")
-            thereader = csv.reader(chifile, delimiter=' ', quotechar='|')
             degreesofFreedom = len(expected) - 1
             pvalueabove = 0
             pvaluebelow = 0
-            chifile.seek(0)
-            for row in thereader:
-                if(str(degreesofFreedom) == row[0]):
-                    chifile.seek(0)
-                    for lines in thereader:
-                        if(lines[0] == 'DegreesOfFreedom'):
-                            for numbers in range(1, len(row)):
-                                if(chisquarevalue <= float(row[numbers]) and numbers != 1):
-                                    pvaluebelow = float(lines[numbers])
-                                    pvalueabove = float(lines[numbers-1])
-                                    break
-                                elif(chisquarevalue <= float(row[numbers]) and numbers == 1):
-                                    pvaluebelow = float(lines[numbers])
-                                    pvalueabove = 1
-                                    break
-                                elif(numbers == len(row)-1 and chisquarevalue >= float(row[numbers])):
-                                    pvaluebelow = 0
-                                    pvalueabove = float(lines[10])
-                                    break
-            chifile.close()
-            print("The p-value is between ", pvaluebelow, " and ", pvalueabove)
+            for i in range(1, len(chisquaretable[degreesofFreedom])):
+                if(chisquarevalue <= chisquaretable[degreesofFreedom][i] and i != 1):
+                    pvaluebelow = chisquaretable[0][i]
+                    pvalueabove = chisquaretable[0][i-1]
+                    break
+                if(chisquarevalue <= chisquaretable[degreesofFreedom][i] and i == 1):
+                    pvaluebelow = .995
+                    pvalueabove = 1
+                    break
+                if(i == len(chisquaretable[degreesofFreedom])-1 and chisquarevalue >= chisquaretable[degreesofFreedom][i]):
+                    pvaluebelow = 0
+                    pvalueabove = .0050
+                    break
             chisquareresults = Label(bottom, text="chi square = " + str(chisquarevalue))
             chisquareresults2 = Label(bottom, text="the p-value is between " + str(pvaluebelow) + " and " + str(pvalueabove))
             chisquareresults.grid(column = 3)

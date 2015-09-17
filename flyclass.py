@@ -1,5 +1,4 @@
 __author__ = 'Kira'
-import csv
 import random
 import math
 class Fly:
@@ -7,25 +6,29 @@ class Fly:
         self.female = female #either true or false
         self.mutations = mutations #list of mutations, first index is mutation (0 through 6), second index is allele (0 is female, 1 is male)
         self.mutationinfos = [] #fisrt index is mutation (0 through 6), second index is allele (0 or 1), third index is specific data (0 through 5)
-        #self.chromosomenum = [] #DO I NEED THIS /\/\/\ WHAT IS THIS
         self.mutpair = [] #each pair that is appended to self.mutationinfos
         self.alleles = [""]*(len(self.mutations)-1) #alleles that will be returned from chooseAlleles(), subtract one because you delete sex
         self.listofchromosomes = [[], [], [], []] #chromosome 1 is the X chromosome
         self.sex = [] #[x,x] if female, [x,y] if male
         self.sexallele = "" #either x or y; randomly chosen from self.sex
         self.chromosomeOverload = False #will become true if there are 4 or more mutations on a chromosome
+        self.chromosomelayout = [["1","white eyes","w","no","1.5","no","no","" ],["1","tan body","t","no","27.5","no","no","" ],
+                                 ["2","curly wings","Cy","yes","6.1","yes","no",""],["2","black body","b","no","48.5","no","no","" ],
+                                 ["2","purple eyes","pr","no","54.5","no","no","" ], ["2","vestigial wings","vg","no","67","no","no","incomplete wing vein"],
+                                 ["2","lobe eyes","L","yes","72","no","no",""], ["2","brown eyes","bw","no","104.5","no","no","" ],
+                                 ["3","stubble bristles","Sb","yes","58.2","yes","no","" ],["3","ebony body","e","no","70.7","no","no",""],
+                                 ["4","eyeless","ey","no","2","no","no","" ],["4","shaven bristles","sv","no","3","no","no",""],
+                                 ["2","apterous wings","ap","no","55.4","no","no",""], ["3","aristapedia","ssa","no","58.5","yes","no","" ],
+                                 ["3","incomplete wing vein","","no","47","no","yes","vestigial wings"]]
+                                ###Chromosome, mutation, abbreviation, dominant, number (location), lethal, epistatic, epistatic with
 
     def getAlleleLocation(self, chromosome, chromosomeindex): #for linked genes, finds location on chromosome
-        cfile = open("chromosome_layout.csv")
-        thereader = csv.reader(cfile, delimiter=',', quotechar='|')
         locationvar = 0
         for allele in chromosome[chromosomeindex]:
             if(locationvar == 0):
-                cfile.seek(0)
-                for row in thereader:
+                for row in self.chromosomelayout:
                     if (row[1] == allele):
                         locationvar = float(row[4])
-        cfile.close()
         return locationvar
 
     def chooseAlleles(self):
@@ -35,8 +38,6 @@ class Fly:
             self.sex = ["x", "x"]
         else:
             self.sex = ["x", "y"]
-        cfile = open("chromosome_layout.csv")
-        thereader = csv.reader(cfile, delimiter=',', quotechar='|')
         for i in range(0, len(self.mutations)):
             self.mutpair = []
             lethal = False
@@ -45,8 +46,7 @@ class Fly:
                 if (allele == "wild type" or allele == ""):
                     self.mutpair.append([""])
                 else:
-                    cfile.seek(0)
-                    for row in thereader:
+                    for row in self.chromosomelayout:
                         if (row[1] == allele):
                             self.mutpair.append(row)
                             if (row[5] == "yes"): #check to see if lethal, if it is, make heterozygous
@@ -198,8 +198,7 @@ class Fly:
             if (mut == "wild type" or mut == ""):
                 self.mutationinfos.append([""])
             else:
-                cfile.seek(0)
-                for row in thereader:
+                for row in self.chromosomelayout:
                     if (row[1] == mut):
                         self.mutationinfos.append(row)
                         break
